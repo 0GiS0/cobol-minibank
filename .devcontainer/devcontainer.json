@@ -1,5 +1,5 @@
 {
-  "name": "COBOL MiniBank (Dev)",
+  "name": "🏦 COBOL MiniBank Development Environment",
   "build": {
     "dockerfile": "Dockerfile"
   },
@@ -7,27 +7,55 @@
     "vscode": {
       "extensions": [
         "bitlang.cobol",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "streetsidesoftware.code-spell-checker"
       ],
       "settings": {
         "files.associations": {
           "*.cob": "COBOL",
-          "*.cpy": "COBOL"
+          "*.cpy": "COBOL",
+          "*.CBL": "COBOL",
+          "*.COB": "COBOL"
         },
         "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "editor.rulers": [7, 11, 72],
+        "editor.wordWrap": "off",
         "cobolplugin.tabstops": "4,7,11",
-        "cobolplugin.enable_semantic_token_colouring": true
+        "cobolplugin.enable_semantic_token_colouring": true,
+        "cobolplugin.format_constants_to_uppercase": true,
+        "cobolplugin.format_keywords_to_uppercase": true,
+        "files.eol": "\n",
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "git.autofetch": true
       }
     }
   },
   "remoteUser": "vscode",
   "containerUser": "vscode",
-  "postCreateCommand": "mkdir -p data && [ -f data/transactions.csv ] || printf \"2025-01-10,ACC-001,CREDIT,1000\\n2025-01-12,ACC-001,DEBIT,150.25\\n2025-01-15,ACC-002,CREDIT,500\\n2025-01-18,ACC-001,CREDIT,200\\n2025-01-20,ACC-002,DEBIT,50.75\\n\" > data/transactions.csv",
+  "postCreateCommand": ".devcontainer/post-create.sh",
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": false
+    },
     "ghcr.io/devcontainers/features/common-utils:2": {
-      "installZsh": "true"
-    }
+      "installZsh": "true",
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "workspaceFolder": "/workspaces/cobol-minibank"
+  "workspaceFolder": "/workspaces/cobol-minibank",
+  "forwardPorts": [],
+  "portsAttributes": {},
+  "shutdownAction": "stopContainer",
+  "initializeCommand": "echo '🏦 Initializing COBOL MiniBank development environment...'",
+  "onCreateCommand": "echo '📦 Setting up container...'",
+  "updateContentCommand": "echo '🔄 Updating dependencies...'",
+  "postStartCommand": "echo '🚀 COBOL MiniBank ready for development!'"
 }
