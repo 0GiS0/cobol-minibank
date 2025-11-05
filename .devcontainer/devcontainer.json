@@ -1,0 +1,33 @@
+{
+  "name": "COBOL MiniBank (Dev)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bitlang.cobol",
+        "ms-vscode.makefile-tools"
+      ],
+      "settings": {
+        "files.associations": {
+          "*.cob": "COBOL",
+          "*.cpy": "COBOL"
+        },
+        "editor.tabSize": 4,
+        "cobolplugin.tabstops": "4,7,11",
+        "cobolplugin.enable_semantic_token_colouring": true
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "containerUser": "vscode",
+  "postCreateCommand": "mkdir -p data && [ -f data/transactions.csv ] || printf \"2025-01-10,ACC-001,CREDIT,1000\\n2025-01-12,ACC-001,DEBIT,150.25\\n2025-01-15,ACC-002,CREDIT,500\\n2025-01-18,ACC-001,CREDIT,200\\n2025-01-20,ACC-002,DEBIT,50.75\\n\" > data/transactions.csv",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "true"
+    }
+  },
+  "workspaceFolder": "/workspaces/cobol-minibank"
+}

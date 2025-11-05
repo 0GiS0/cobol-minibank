@@ -1,0 +1,59 @@
+# COBOL compiled executables
+*.exe
+*.out
+src/minibank
+src/minibank-simple
+src/minibank-debug
+src/minibank-test
+
+# COBOL compilation artifacts
+*.o
+*.obj
+*.lib
+*.lst
+*.map
+*.cbl.c
+*.c.l.h
+
+# GnuCOBOL specific
+*.so
+*.dll
+*.dylib
+.libs/
+.deps/
+
+# Output data files (optional - uncomment if you don't want to track them)
+# data/balances.csv
+# data/output*.csv
+# data/report*.txt
+
+# Backup files
+*~
+*.bak
+*.backup
+*.orig
+
+# IDE and editor files
+.vscode/c_cpp_properties.json
+*.swp
+*.swo
+*#
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Build directories
+build/
+dist/
+bin/
+
+# Log files
+*.log
+debug.txt
+
+# Test artifacts
+test_output/
+temp/
+data/balances.csv
