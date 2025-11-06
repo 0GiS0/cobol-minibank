@@ -26,10 +26,18 @@ src/minibank-test
 .deps/
 *.dylib.dSYM/
 
-# Output data files (optional - uncomment if you don't want to track them)
-# data/balances.csv
-# data/output*.csv
-# data/report*.txt
+# ===== IGNORA TODO EXCEPTO .COB EN DIRECTORIOS ESPECÍFICOS =====
+# Ignora todos los archivos en src/ excepto .cob
+src/**
+!src/*.cob
+!src/copybooks/
+src/copybooks/**
+!src/copybooks/*.cpy
+
+# Ignora todos los archivos en .devcontainer/ excepto .py y .sh
+.devcontainer/**
+!.devcontainer/*.py
+!.devcontainer/*.sh
 
 # Backup files
 *~
@@ -48,10 +56,10 @@ src/minibank-test
 Thumbs.db
 *.tmp
 
-# Build directories
+# Build and temporary files
 build/
-dist/
-bin/
+/tmp/
+.devcontainer/*.tmp
 
 # Log files
 *.log
@@ -60,4 +68,3 @@ debug.txt
 # Test artifacts
 test_output/
 temp/
-data/balances.csv
