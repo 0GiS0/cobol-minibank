@@ -127,15 +127,15 @@
       * Controla el flujo general del procesamiento
       * ------------------------------------------------------------
        MAIN.
-      *    � CONECTAR A DB2
+      *    ✅ CONECTAR A DB2
            PERFORM CONNECT-DB2.
            IF SQLCODE NOT = 0
               DISPLAY "❌ Error conectando a DB2: " SQLCODE
               GOBACK
            END-IF
-           DISPLAY "✅ Conectado a DB2 exitosamente".
+           DISPLAY "✅ Conectado a DB2 exitosamente" UPON CONSOLE.
 
-      *    �📂 Configurar rutas de archivos
+      *    📂 Configurar rutas de archivos
            MOVE "data/transactions.csv" TO TX-PATH
            MOVE "data/balances.csv" TO OUT-PATH.
 
@@ -197,7 +197,7 @@
       * 🔗 CONNECT-DB2 - Conectar a la base de datos
       * ============================================================
        CONNECT-DB2.
-           DISPLAY "🔌 Conectando a DB2..."
+           DISPLAY "🔌 Conectando a DB2..." UPON CONSOLE.
            EXEC SQL
                CONNECT TO minibank USER 'db2inst1' USING 'password'
                WITH URI 'HOSTNAME=db;PORT=50000;'
@@ -205,13 +205,13 @@
 
            EVALUATE SQLCODE
               WHEN 0
-                 DISPLAY "✅ Conexión exitosa a DB2"
+                 DISPLAY "✅ Conexión exitosa a DB2" UPON CONSOLE
               WHEN -30081
-                 DISPLAY "❌ Error: No se puede contactar el servidor DB2"
+                 DISPLAY "❌ Error: No se puede contactar el servidor DB2" UPON CONSOLE
               WHEN -30082
-                 DISPLAY "❌ Error: Credenciales inválidas"
+                 DISPLAY "❌ Error: Credenciales inválidas" UPON CONSOLE
               WHEN OTHER
-                 DISPLAY "❌ Error SQL: " SQLCODE
+                 DISPLAY "❌ Error SQL: " SQLCODE UPON CONSOLE
            END-EVALUATE
            .
 
@@ -242,11 +242,14 @@
               WHEN 0
                  DISPLAY "✅ Transacción insertada: "
                         WS-ACCOUNT " " WS-TYPE " " WS-AMOUNT-STR
+                     UPON CONSOLE
               WHEN 100
-                 DISPLAY "⚠️ Cuenta no encontrada: " WS-ACCOUNT
+                 DISPLAY "⚠️  Cuenta no encontrada: " WS-ACCOUNT
+                     UPON CONSOLE
                  PERFORM CREATE-ACCOUNT
               WHEN OTHER
                  DISPLAY "❌ Error insertando transacción: " SQLCODE
+                     UPON CONSOLE
            END-EVALUATE
            .
 
@@ -263,10 +266,10 @@
            END-EXEC.
 
            IF SQLCODE = 0
-              DISPLAY "✅ Cuenta creada: " WS-ACCOUNT
+              DISPLAY "✅ Cuenta creada: " WS-ACCOUNT UPON CONSOLE
               PERFORM INSERT-TRANSACTION
            ELSE
-              DISPLAY "❌ Error creando cuenta: " SQLCODE
+              DISPLAY "❌ Error creando cuenta: " SQLCODE UPON CONSOLE
            END-IF
            .
 
@@ -274,7 +277,7 @@
       * 📊 QUERY-BALANCES - Consultar saldos desde DB2
       * ============================================================
        QUERY-BALANCES.
-           DISPLAY "📊 Consultando saldos desde DB2...".
+           DISPLAY "📊 Consultando saldos desde DB2..." UPON CONSOLE.
 
            EXEC SQL
                DECLARE CURSOR1 CURSOR FOR
@@ -288,7 +291,7 @@
            END-EXEC.
 
            IF SQLCODE NOT = 0
-              DISPLAY "❌ Error abriendo cursor: " SQLCODE
+              DISPLAY "❌ Error abriendo cursor: " SQLCODE UPON CONSOLE
               EXIT PARAGRAPH
            END-IF.
 
@@ -310,10 +313,11 @@
                     END-STRING
                     WRITE OUT-LINE
                     DISPLAY "  " DB-ACCOUNT-NAME " " FORMATTED-BAL
+                        UPON CONSOLE
                  WHEN 100
                     MOVE "Y" TO DB-EOF
                  WHEN OTHER
-                    DISPLAY "❌ Error en fetch: " SQLCODE
+                    DISPLAY "❌ Error en fetch: " SQLCODE UPON CONSOLE
                     MOVE "Y" TO DB-EOF
               END-EVALUATE
            END-PERFORM.
@@ -327,15 +331,16 @@
       * 🔗 DISCONNECT-DB2 - Desconectar de DB2
       * ============================================================
        DISCONNECT-DB2.
-           DISPLAY "🔌 Desconectando de DB2...".
+           DISPLAY "🔌 Desconectando de DB2..." UPON CONSOLE.
            EXEC SQL
                DISCONNECT ALL
            END-EXEC.
 
            IF SQLCODE = 0
-              DISPLAY "✅ Desconexión exitosa"
+              DISPLAY "✅ Desconexión exitosa" UPON CONSOLE
            ELSE
-              DISPLAY "⚠️ Advertencia al desconectar: " SQLCODE
+              DISPLAY "⚠️  Advertencia al desconectar: " SQLCODE
+                  UPON CONSOLE
            END-IF
            .
 

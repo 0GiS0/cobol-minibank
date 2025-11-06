@@ -9,7 +9,7 @@ Este es un ejemplo educativo de un **sistema bancario simplificado** escrito en 
 El programa simula las operaciones básicas de un banco:
 
 1. 📄 **Lee transacciones** desde un archivo CSV (`data/transactions.csv`)
-2. 🔄 **Procesa cada transacción** (depósitos y retiros) 
+2. 🔄 **Procesa cada transacción** (depósitos y retiros)
 3. 🧮 **Calcula los saldos** de todas las cuentas
 4. 📊 **Genera un reporte** con los saldos finales (`data/balances.csv`)
 
@@ -18,7 +18,7 @@ El programa simula las operaciones básicas de un banco:
 **📥 Archivo de entrada** (`transactions.csv`):
 ```
 2025-01-10,ACC-001,CREDIT,1000      # 💰 Depósito de $1000 en cuenta ACC-001
-2025-01-12,ACC-001,DEBIT,150.25     # 💸 Retiro de $150.25 de cuenta ACC-001  
+2025-01-12,ACC-001,DEBIT,150.25     # 💸 Retiro de $150.25 de cuenta ACC-001
 2025-01-15,ACC-002,CREDIT,500       # 💰 Depósito de $500 en cuenta ACC-002
 2025-01-18,ACC-001,CREDIT,200       # 💰 Depósito de $200 en cuenta ACC-001
 2025-01-20,ACC-002,DEBIT,50.75      # 💸 Retiro de $50.75 de cuenta ACC-002

@@ -76,13 +76,13 @@
            GOBACK.
 
        CONNECT-TO-DB2.
-           DISPLAY "Conectando a DB2..."
+           DISPLAY "Conectando a DB2..." UPON CONSOLE
            MOVE FUNCTION CONCATENATE(PYTHON-CMD, " connect")
                TO CMD-LINE
            CALL "SYSTEM" USING CMD-LINE RETURNING RC.
 
        DISCONNECT-FROM-DB2.
-           DISPLAY "Desconectando de DB2..."
+           DISPLAY "Desconectando de DB2..." UPON CONSOLE
            MOVE FUNCTION CONCATENATE(PYTHON-CMD, " disconnect")
                TO CMD-LINE
            CALL "SYSTEM" USING CMD-LINE RETURNING RC.
@@ -113,7 +113,7 @@
            CALL "SYSTEM" USING CMD-LINE RETURNING RC.
 
        GET-BALANCES-FROM-DB2.
-           DISPLAY "Consultando saldos desde DB2..."
+           DISPLAY "Consultando saldos desde DB2..." UPON CONSOLE
            MOVE FUNCTION CONCATENATE(
                PYTHON-CMD, " balances > ", DB-PATH)
                TO CMD-LINE.
@@ -132,7 +132,7 @@
                  NOT AT END
                     MOVE DB-BAL-LINE TO OUT-LINE
                     WRITE OUT-LINE
-                    DISPLAY FUNCTION TRIM(DB-BAL-LINE)
+                    DISPLAY FUNCTION TRIM(DB-BAL-LINE) UPON CONSOLE
               END-READ
            END-PERFORM.
            CLOSE DB-BALANCES.

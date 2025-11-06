@@ -27,10 +27,12 @@ def connect_db2():
         dsn = (f"DATABASE={DB_CONFIG['database']};HOSTNAME={DB_CONFIG['hostname']};"
                f"PORT={DB_CONFIG['port']};UID={DB_CONFIG['user']};PWD={DB_CONFIG['password']};")
         conn = ibm_db.connect(dsn, "", "")
-        print("✅ Conectado a DB2 exitosamente")
+        # No mostrar mensaje en modo silencioso
+        if os.environ.get('DB2_SILENT') != '1':
+            print("✅ Conectado a DB2 exitosamente")
         return True
     except Exception as e:
-        print(f"❌ Error conectando a DB2: {e}")
+        print(f"❌ Error conectando a DB2: {e}", file=sys.stderr)
         return False
 
 def disconnect_db2():
@@ -38,12 +40,13 @@ def disconnect_db2():
     global conn
     if conn:
         ibm_db.close(conn)
-        print("✅ Desconexión exitosa")
+        if os.environ.get('DB2_SILENT') != '1':
+            print("✅ Desconexión exitosa")
 
 def insert_transaction(account_name, tx_date, tx_type, amount):
     """Insertar una transacción"""
     if not conn:
-        print("❌ No hay conexión a DB2")
+        print("❌ No hay conexión a DB2", file=sys.stderr)
         return False
 
     try:
@@ -59,7 +62,8 @@ def insert_transaction(account_name, tx_date, tx_type, amount):
             sql_create = (f"INSERT INTO ACCOUNTS (ACCOUNT_NAME, BALANCE) "
                          f"VALUES ('{account_name}', 0)")
             ibm_db.exec_immediate(conn, sql_create)
-            print(f"✅ Cuenta creada: {account_name}")
+            if os.environ.get('DB2_SILENT') != '1':
+                print(f"✅ Cuenta creada: {account_name}")
 
             # Obtener el ID de la cuenta recién creada
             stmt = ibm_db.exec_immediate(conn, sql_check)
@@ -79,17 +83,18 @@ def insert_transaction(account_name, tx_date, tx_type, amount):
             sql_update = f"UPDATE ACCOUNTS SET BALANCE = BALANCE - {amount} WHERE ACCOUNT_ID = {account_id}"
 
         ibm_db.exec_immediate(conn, sql_update)
-        print(f"✅ Transacción insertada: {account_name} {tx_type} {amount}")
+        if os.environ.get('DB2_SILENT') != '1':
+            print(f"✅ Transacción insertada: {account_name} {tx_type} {amount}")
         return True
 
     except Exception as e:
-        print(f"❌ Error insertando transacción: {e}")
+        print(f"❌ Error insertando transacción: {e}", file=sys.stderr)
         return False
 
 def get_balances():
     """Obtener todos los saldos"""
     if not conn:
-        print("❌ No hay conexión a DB2")
+        print("❌ No hay conexión a DB2", file=sys.stderr)
         return []
 
     try:
@@ -107,7 +112,7 @@ def get_balances():
 
         return balances
     except Exception as e:
-        print(f"❌ Error consultando saldos: {e}")
+        print(f"❌ Error consultando saldos: {e}", file=sys.stderr)
         return []
 
 def main():

@@ -336,7 +336,7 @@ cobol-minibank/
   ```
 
 #### 2. **`src/minibank-db2.cob`** (Programa alternativo)
-- **Razón**: 
+- **Razón**:
   - Nunca se compila en el flujo normal (tasks.json solo usa `build` y `run`)
   - Usa interfaz Python que agrega complejidad innecesaria
   - El programa principal `minibank.cob` ya hace todo lo necesario con embedded SQL
@@ -348,7 +348,7 @@ cobol-minibank/
 - **Además eliminar del Makefile**: Targets `build-db2` y `run-db2`
 
 #### 3. **`src/copybooks/record-layout.cpy`** (Copybook no utilizado)
-- **Razón**: 
+- **Razón**:
   - Archivo definido pero nunca incluido en el programa COBOL
   - Solo contiene estructura de referencia
   - El programa usa UNSTRING para parsing, no esta estructura

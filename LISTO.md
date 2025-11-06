@@ -211,7 +211,7 @@ Se hicieron 2 commits limpios:
 **Tu dev container ahora:**
 - ✅ Carga DB2 automáticamente
 - ✅ Crea tablas y datos
-- ✅ Muestra verificación en terminal  
+- ✅ Muestra verificación en terminal
 - ✅ Permite verificar en cualquier momento
 - ✅ Está completamente documentado
 - ✅ Repositorio limpio sin compilables

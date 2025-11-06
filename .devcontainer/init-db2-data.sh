@@ -162,7 +162,7 @@ CONNECT TO minibank USER db2inst1 USING password
 SET ISOLATION = CS
 
 -- Mostrar cuentas
-SELECT 
+SELECT
     ACCOUNT_ID,
     ACCOUNT_NAME,
     BALANCE,
@@ -186,7 +186,7 @@ CONNECT TO minibank USER db2inst1 USING password
 SET ISOLATION = CS
 
 -- Mostrar transacciones
-SELECT 
+SELECT
     TRANSACTION_ID,
     ACCOUNT_ID,
     TRANSACTION_DATE,
@@ -212,7 +212,7 @@ CONNECT TO minibank USER db2inst1 USING password
 SET ISOLATION = CS
 
 -- Calcular saldos finales por cuenta
-SELECT 
+SELECT
     A.ACCOUNT_ID,
     A.ACCOUNT_NAME,
     COALESCE(A.BALANCE, 0) AS BALANCE_ANTERIOR,

@@ -20,7 +20,7 @@ run: build
 
 run-db2: build-db2
 	@mkdir -p data
-	@./$(APP_DB2) && \
+	@DB2_SILENT=1 ./$(APP_DB2) && \
 	echo "✅ Hecho. Salida en data/balances.csv"
 
 clean:

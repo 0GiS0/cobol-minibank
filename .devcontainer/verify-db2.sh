@@ -62,7 +62,7 @@ docker exec -ti db2server bash -c "su - db2inst1 << 'SQLEOF'
 CONNECT TO minibank USER db2inst1 USING password
 SET ISOLATION = CS
 
-SELECT 
+SELECT
     ACCOUNT_ID,
     ACCOUNT_NAME,
     BALANCE
@@ -84,7 +84,7 @@ docker exec -ti db2server bash -c "su - db2inst1 << 'SQLEOF'
 CONNECT TO minibank USER db2inst1 USING password
 SET ISOLATION = CS
 
-SELECT 
+SELECT
     ACCOUNT_ID,
     TRANSACTION_TYPE,
     COUNT(*) AS "Cantidad",

@@ -108,7 +108,7 @@ No había forma de asegurar que:
 ### 3 Cuentas de ejemplo:
 ```sql
 ACC-001  │ Cuenta Corriente Juan
-ACC-002  │ Cuenta Ahorro María  
+ACC-002  │ Cuenta Ahorro María
 ACC-003  │ Cuenta Inversión Pedro
 ```
 
@@ -220,7 +220,7 @@ ACC-003  → $2,599.50  (2500 - 350.50 + 450)
 
 ## ✨ Resultado final
 
-**Antes:** 
+**Antes:**
 ❌ No se sabía si los datos estaban cargados
 ❌ No había forma de verificar
 ❌ Había que conectarse manualmente a DB2
