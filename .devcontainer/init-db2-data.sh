@@ -52,7 +52,8 @@ sleep 2  # Extra espera para que DB2 finalice inicialización
 # ===============================================
 echo -e "\n${BLUE}📊 Paso 2: Creando tablas en DB2...${NC}"
 
-docker exec -ti db2server bash -c "su - db2inst1 << 'SQLEOF'
+# Estamos dentro de un dev container, nos conectamos usando ssh al contenedor db2
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null db2inst1@db << 'SQLEOF'
 SET SCHEMA = db2inst1
 -- Conectar a la base de datos
 CONNECT TO minibank USER db2inst1 USING password
@@ -89,7 +90,7 @@ CREATE INDEX IDX_TRANS_DATE ON TRANSACTIONS(TRANSACTION_DATE)
 COMMIT
 
 SQLEOF
-" 2>&1 | grep -E "DB20000I|SQL|Error" || true
+2>&1 | grep -E "DB20000I|SQL|Error" || true
 
 echo -e "${GREEN}✅ Tablas creadas exitosamente${NC}"
 
@@ -98,7 +99,7 @@ echo -e "${GREEN}✅ Tablas creadas exitosamente${NC}"
 # ===============================================
 echo -e "\n${BLUE}📝 Paso 3: Cargando datos de ejemplo...${NC}"
 
-docker exec -ti db2server bash -c "su - db2inst1 << 'SQLEOF'
+db2 +c << 'SQLEOF'
 CONNECT TO minibank USER db2inst1 USING password
 
 -- Crear cuentas de ejemplo
@@ -145,7 +146,7 @@ VALUES ('ACC-003', '2025-02-03', 'CREDIT', 450.00)
 COMMIT
 
 SQLEOF
-" 2>&1 | grep -E "INSERT|Error" || true
+2>&1 | grep -E "INSERT|Error" || true
 
 echo -e "${GREEN}✅ Datos de ejemplo cargados${NC}"
 
@@ -153,11 +154,11 @@ echo -e "${GREEN}✅ Datos de ejemplo cargados${NC}"
 # PASO 4: Calcular saldos y mostrar verificación
 # ===============================================
 echo -e "\n${BLUE}🔍 Paso 4: Verificando datos cargados...${NC}"
-echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${YELLOW}📊 CUENTAS EN EL SISTEMA:${NC}"
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-docker exec -ti db2server bash -c "su - db2inst1 << 'SQLEOF'
+db2 +c << 'SQLEOF'
 CONNECT TO minibank USER db2inst1 USING password
 SET ISOLATION = CS
 
@@ -172,7 +173,6 @@ ORDER BY ACCOUNT_ID
 
 CONNECT RESET
 SQLEOF
-"
 
 # ===============================================
 # PASO 5: Mostrar transacciones
@@ -181,7 +181,7 @@ echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━
 echo -e "${YELLOW}📋 TRANSACCIONES CARGADAS:${NC}"
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-docker exec -ti db2server bash -c "su - db2inst1 << 'SQLEOF'
+db2 +c << 'SQLEOF'
 CONNECT TO minibank USER db2inst1 USING password
 SET ISOLATION = CS
 
@@ -198,7 +198,6 @@ ORDER BY TRANSACTION_ID
 
 CONNECT RESET
 SQLEOF
-"
 
 # ===============================================
 # PASO 6: Mostrar resumen de saldos calculados
