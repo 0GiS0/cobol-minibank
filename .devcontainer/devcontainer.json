@@ -10,7 +10,8 @@
         "ms-vscode.makefile-tools",
         "ms-vscode.vscode-json",
         "redhat.vscode-yaml",
-        "streetsidesoftware.code-spell-checker"
+        "streetsidesoftware.code-spell-checker",
+        "mechatroner.rainbow-csv"
       ],
       "settings": {
 

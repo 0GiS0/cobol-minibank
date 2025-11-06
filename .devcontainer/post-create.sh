@@ -74,37 +74,14 @@ if [ "$DB2_READY" = true ]; then
     sleep 3  # Extra wait for DB2 to be fully initialized
     echo "📊 DB2 ready for connections"
 
-    # Make scripts executable
-    chmod +x .devcontainer/connect-db2.sh
-    chmod +x .devcontainer/init-db2-data.sh
-
     # ✨ Inicializar BD2 con datos de ejemplo
     echo ""
     echo "🎯 Ejecutando inicialización de DB2..."
-    .devcontainer/init-db2-data.sh
+    python3 .devcontainer/init-db2-python.py
+    python3 .devcontainer/load-sample-data.py
 else
     echo "⚠️  DB2 did not start after 3 minutes, but continuing..."
     echo "    The DB2 container may still be initializing."
     echo "    You can manually run: .devcontainer/init-db2-data.sh"
 fi
 
-# Mostrar estructura del proyecto
-echo ""
-echo "📂 Project structure:"
-tree -I 'build|*.o|minibank|minibank-*' || ls -la
-
-echo ""
-echo "🎉 Setup complete! You can now:"
-echo "   1. Build: make build"
-echo "   2. Run: make run"
-echo "   3. Clean: make clean"
-echo ""
-echo "🗄️ DB2 Information:"
-echo "   • Status: Available on db:50000"
-echo "   • Database: minibank"
-echo "   • User: db2inst1"
-echo ""
-echo "💡 To connect to DB2:"
-echo "   • From terminal: .devcontainer/connect-db2.sh"
-echo "   • Or: db2 CONNECT TO minibank USER db2inst1 USING password"
-echo "   • Initialize tables: db2 -tf .devcontainer/init-db2.sql"
