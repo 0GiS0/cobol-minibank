@@ -1,12 +1,13 @@
-# COBOL compiled executables
+# ===== COBOL COMPILED EXECUTABLES =====
 *.exe
 *.out
 src/minibank
+src/minibank-db2
 src/minibank-simple
 src/minibank-debug
 src/minibank-test
 
-# COBOL compilation artifacts
+# ===== COBOL COMPILATION ARTIFACTS =====
 *.o
 *.obj
 *.lib
@@ -14,13 +15,16 @@ src/minibank-test
 *.map
 *.cbl.c
 *.c.l.h
+*.i
+*.s
 
-# GnuCOBOL specific
+# ===== GnuCOBOL SPECIFIC =====
 *.so
 *.dll
 *.dylib
 .libs/
 .deps/
+*.dylib.dSYM/
 
 # Output data files (optional - uncomment if you don't want to track them)
 # data/balances.csv

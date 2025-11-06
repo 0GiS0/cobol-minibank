@@ -89,7 +89,35 @@ El resultado se genera automáticamente en `data/balances.csv`.
 4. 🧮 **Aritmética decimal**: Cálculos precisos con números decimales
 5. 🔤 **Procesamiento de cadenas**: Parsing de datos CSV
 
-## 🔧 Modificaciones posibles
+## �️ Verificación de datos en DB2
+
+El contenedor se inicializa automáticamente con datos de ejemplo. Para verificar que todo está correcto:
+
+### ✅ Verificación automática (durante post-create)
+- El script `post-create.sh` ejecuta automáticamente `init-db2-data.sh`
+- Se crean las tablas ACCOUNTS y TRANSACTIONS
+- Se cargan 10 transacciones de ejemplo
+- Se muestran consultas para verificar los datos
+
+### 🔍 Verificación manual en cualquier momento
+```bash
+# Ver estado de DB2 y datos cargados
+.devcontainer/verify-db2.sh
+```
+
+Este script muestra:
+- ✅ Estado de conexión a DB2
+- 📊 Cantidad de cuentas y transacciones
+- 💰 Detalles de saldos por cuenta
+- 📋 Resumen de transacciones
+
+### 🔄 Reinicializar datos
+```bash
+# Ejecutar nuevamente el script de inicialización
+.devcontainer/init-db2-data.sh
+```
+
+## �🔧 Modificaciones posibles
 
 - 📝 Cambiar el archivo de transacciones en `.vscode/tasks.json`
 - ✅ Agregar validaciones (saldo mínimo, cuentas válidas)
@@ -102,3 +130,4 @@ El resultado se genera automáticamente en `data/balances.csv`.
 - 💾 El binario se genera en tu workspace local
 - ✅ Compatible con estándares COBOL modernos
 - 🐛 Incluye debugging y herramientas de desarrollo
+- 🗄️ DB2 se inicia automáticamente con datos de ejemplo

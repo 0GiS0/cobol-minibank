@@ -74,12 +74,18 @@ if [ "$DB2_READY" = true ]; then
     sleep 3  # Extra wait for DB2 to be fully initialized
     echo "📊 DB2 ready for connections"
 
-    # Make the connect script executable
+    # Make scripts executable
     chmod +x .devcontainer/connect-db2.sh
+    chmod +x .devcontainer/init-db2-data.sh
+
+    # ✨ Inicializar BD2 con datos de ejemplo
+    echo ""
+    echo "🎯 Ejecutando inicialización de DB2..."
+    .devcontainer/init-db2-data.sh
 else
     echo "⚠️  DB2 did not start after 3 minutes, but continuing..."
     echo "    The DB2 container may still be initializing."
-    echo "    You can manually run: .devcontainer/connect-db2.sh"
+    echo "    You can manually run: .devcontainer/init-db2-data.sh"
 fi
 
 # Mostrar estructura del proyecto
