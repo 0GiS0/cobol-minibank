@@ -1,0 +1,138 @@
+      ******************************************************************
+      * COBOL MINIBANK - SISTEMA BANCARIO CON DB2
+      * Procesa transacciones via interfaz Python
+      ******************************************************************
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. MINIBANK-DB2.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TX-FILE ASSIGN TO TX-PATH
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT OUT-FILE ASSIGN TO OUT-PATH
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT DB-BALANCES ASSIGN TO DB-PATH
+               ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+
+       FILE SECTION.
+       FD  TX-FILE.
+       01  TX-LINE              PIC X(256).
+       FD  OUT-FILE.
+       01  OUT-LINE             PIC X(256).
+       FD  DB-BALANCES.
+       01  DB-BAL-LINE          PIC X(256).
+
+       WORKING-STORAGE SECTION.
+
+       77  TX-PATH              PIC X(256).
+       77  OUT-PATH             PIC X(256).
+       77  DB-PATH              PIC X(256).
+       77  CMD-LINE             PIC X(512).
+       77  RC                   PIC S9(9) COMP.
+       77  EOF                  PIC X VALUE "N".
+       77  WS-LINE              PIC X(256).
+       77  PYTHON-CMD           PIC X(256)
+           VALUE "python3 .devcontainer/db2-interface.py".
+
+       77  WS-DATE              PIC X(10).
+       77  WS-ACCOUNT           PIC X(30).
+       77  WS-TYPE              PIC X(6).
+       77  WS-AMOUNT-STR        PIC X(20).
+       77  WS-AMOUNT-SIGNED     PIC S9(13)V9(2) VALUE 0.
+
+       PROCEDURE DIVISION.
+
+       MAIN.
+           PERFORM CONNECT-TO-DB2.
+
+           MOVE "data/transactions.csv" TO TX-PATH.
+           MOVE "data/balances.csv" TO OUT-PATH.
+           MOVE "/tmp/db2-balances.csv" TO DB-PATH.
+
+           OPEN INPUT TX-FILE.
+           OPEN OUTPUT OUT-FILE.
+
+           PERFORM UNTIL EOF = "Y"
+              READ TX-FILE
+                 AT END MOVE "Y" TO EOF
+                 NOT AT END
+                    MOVE TX-LINE TO WS-LINE
+                    PERFORM PARSE-LINE
+                    PERFORM INSERT-VIA-PYTHON
+              END-READ
+           END-PERFORM.
+
+           PERFORM GET-BALANCES-FROM-DB2.
+           PERFORM WRITE-HEADER.
+           PERFORM COPY-BALANCES.
+
+           CLOSE TX-FILE.
+           CLOSE OUT-FILE.
+           PERFORM DISCONNECT-FROM-DB2.
+           GOBACK.
+
+       CONNECT-TO-DB2.
+           DISPLAY "Conectando a DB2..."
+           MOVE FUNCTION CONCATENATE(PYTHON-CMD, " connect")
+               TO CMD-LINE
+           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
+
+       DISCONNECT-FROM-DB2.
+           DISPLAY "Desconectando de DB2..."
+           MOVE FUNCTION CONCATENATE(PYTHON-CMD, " disconnect")
+               TO CMD-LINE
+           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
+
+       PARSE-LINE.
+           UNSTRING WS-LINE DELIMITED BY ALL ","
+                INTO WS-DATE
+                     WS-ACCOUNT
+                     WS-TYPE
+                     WS-AMOUNT-STR
+           END-UNSTRING.
+           INSPECT WS-AMOUNT-STR REPLACING ALL "," BY ".".
+           MOVE FUNCTION NUMVAL(WS-AMOUNT-STR)
+                TO WS-AMOUNT-SIGNED.
+           IF WS-TYPE = "DEBIT"
+              MULTIPLY -1 BY WS-AMOUNT-SIGNED
+           END-IF.
+
+       INSERT-VIA-PYTHON.
+           MOVE FUNCTION TRIM(WS-ACCOUNT) TO WS-ACCOUNT.
+           MOVE FUNCTION TRIM(WS-DATE) TO WS-DATE.
+           MOVE FUNCTION TRIM(WS-TYPE) TO WS-TYPE.
+           MOVE FUNCTION TRIM(WS-AMOUNT-STR) TO WS-AMOUNT-STR.
+           MOVE FUNCTION CONCATENATE(
+               PYTHON-CMD, " insert ", WS-ACCOUNT, " ",
+               WS-DATE, " ", WS-TYPE, " ", WS-AMOUNT-STR)
+               TO CMD-LINE.
+           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
+
+       GET-BALANCES-FROM-DB2.
+           DISPLAY "Consultando saldos desde DB2..."
+           MOVE FUNCTION CONCATENATE(
+               PYTHON-CMD, " balances > ", DB-PATH)
+               TO CMD-LINE.
+           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
+
+       WRITE-HEADER.
+           MOVE "account,balance" TO OUT-LINE.
+           WRITE OUT-LINE.
+
+       COPY-BALANCES.
+           OPEN INPUT DB-BALANCES.
+           MOVE "N" TO EOF.
+           PERFORM UNTIL EOF = "Y"
+              READ DB-BALANCES
+                 AT END MOVE "Y" TO EOF
+                 NOT AT END
+                    MOVE DB-BAL-LINE TO OUT-LINE
+                    WRITE OUT-LINE
+                    DISPLAY FUNCTION TRIM(DB-BAL-LINE)
+              END-READ
+           END-PERFORM.
+           CLOSE DB-BALANCES.

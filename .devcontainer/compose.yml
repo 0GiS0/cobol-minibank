@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+
+  db:
+    image: icr.io/db2_community/db2:latest
+    hostname: db2server
+    container_name: db2server
+    restart: always
+    privileged: true
+    env_file:
+      - .db2.env
+    ports:
+      - 50000:50000
+    volumes:
+      - db2_data:/database
+
+volumes:
+  db2_data:

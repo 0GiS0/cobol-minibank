@@ -1,13 +1,14 @@
       ******************************************************************
-      * 🏦 COBOL MINIBANK - SISTEMA BANCARIO SIMPLIFICADO
+      * 🏦 COBOL MINIBANK - SISTEMA BANCARIO CON DB2
       *
       * Este programa procesa transacciones bancarias desde un archivo
-      * CSV y calcula los saldos finales de todas las cuentas.
+      * CSV e inserta los datos directamente en DB2.
       *
       * Funciones principales:
       * - Lee transacciones desde transactions.csv
-      * - Procesa depósitos (CREDIT) y retiros (DEBIT)
-      * - Calcula saldos por cuenta
+      * - Se conecta a DB2 (hostname: db, puerto: 50000)
+      * - Inserta transacciones en tabla TRANSACTIONS
+      * - Consulta y muestra saldos desde ACCOUNTS
       * - Genera reporte en balances.csv
       ******************************************************************
 
@@ -17,6 +18,10 @@
       * ============================================================
        IDENTIFICATION DIVISION.
        PROGRAM-ID. MINIBANK.
+
+      * Incluir el archivo de comunicación con SQL
+       EXEC SQL INCLUDE SQLCA END-EXEC.
+       EXEC SQL INCLUDE SQLTYPES END-EXEC.
 
       * ============================================================
       * 🌐 ENVIRONMENT DIVISION
@@ -84,6 +89,33 @@
        77  ACCT-IDX             PIC 9(4) COMP VALUE 1.   *> Índice actual del array
        77  FORMATTED-BAL        PIC -(12)9.99.           *> Saldo formateado para salida
 
+      * 🔗 VARIABLES PARA DB2 (HOST VARIABLES)
+      * Estas variables se usan en las sentencias EXEC SQL
+       77  DB-ACCOUNT-ID        PIC 9(10).               *> ID de cuenta en DB2
+       77  DB-ACCOUNT-NAME      PIC X(30).               *> Nombre de cuenta en DB2
+       77  DB-BALANCE           PIC S9(13)V9(2).         *> Saldo desde DB2
+       77  DB-TX-DATE           PIC X(10).               *> Fecha para DB2
+       77  DB-TX-TYPE           PIC X(10).               *> Tipo de transacción (CREDIT/DEBIT)
+       77  DB-TX-AMOUNT         PIC S9(13)V9(2).         *> Cantidad para DB2
+       77  DB-RC                PIC S9(9) COMP VALUE 0.  *> Return code de SQL
+
+      * 📊 Variables de cursor para consultas
+       77  DB-EOF               PIC X VALUE "N".         *> Flag End-Of-Fetch
+
+      * ============================================================
+      * 🔗 SQL SECTION - Declarar cursores para consultas
+      * ============================================================
+       SQL SECTION.
+
+      * Cursor para obtener todas las cuentas y sus saldos
+       DECLARE ACCOUNTS-CURSOR CURSOR FOR
+           SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE
+           FROM ACCOUNTS
+           ORDER BY ACCOUNT_NAME
+           FOR READ ONLY.
+           END-EXEC.
+
+
       * ============================================================
       * ⚙️ PROCEDURE DIVISION
       * Contiene la lógica principal del programa
@@ -95,7 +127,15 @@
       * Controla el flujo general del procesamiento
       * ------------------------------------------------------------
        MAIN.
-      *    📂 Configurar rutas de archivos
+      *    � CONECTAR A DB2
+           PERFORM CONNECT-DB2.
+           IF SQLCODE NOT = 0
+              DISPLAY "❌ Error conectando a DB2: " SQLCODE
+              GOBACK
+           END-IF
+           DISPLAY "✅ Conectado a DB2 exitosamente".
+
+      *    �📂 Configurar rutas de archivos
            MOVE "data/transactions.csv" TO TX-PATH
            MOVE "data/balances.csv" TO OUT-PATH.
 
@@ -110,18 +150,20 @@
                  NOT AT END
                     MOVE TX-LINE TO WS-LINE           *> Copiar línea a variable de trabajo
                     PERFORM PARSE-LINE                *> 📝 Analizar campos CSV
-                    PERFORM ACCUMULATE                *> 🧮 Acumular saldo en cuenta
+                    PERFORM INSERT-TRANSACTION        *> 🔗 Insertar en DB2
               END-READ
            END-PERFORM
 
-      *    📊 Generar archivo de salida
+      *    📊 Consultar saldos desde DB2 y generar reporte
            PERFORM WRITE-HEADER      *> Escribir encabezado CSV
-           PERFORM DUMP-BALANCES     *> Escribir todos los saldos
+           PERFORM QUERY-BALANCES    *> Consultar DB2 y escribir saldos
 
-      *    🔒 Cerrar archivos y terminar programa
+      *    🔒 Cerrar archivos y desconectar
            CLOSE TX-FILE
            CLOSE OUT-FILE
+           PERFORM DISCONNECT-DB2
            GOBACK.
+
 
       * ------------------------------------------------------------
       * 📝 PARSE-LINE - Analizar línea CSV
@@ -151,67 +193,157 @@
            END-IF
            .
 
-      * ------------------------------------------------------------
-      * 🧮 ACCUMULATE - Acumular transacción en cuenta
-      * Busca la cuenta en el array y actualiza su saldo
-      * Si no existe, crea una nueva entrada
-      * ------------------------------------------------------------
-       ACCUMULATE.
-      *    🔍 Inicializar búsqueda
-           MOVE "N" TO FOUND           *> Flag: cuenta no encontrada aún
-           MOVE 1 TO ACCT-IDX          *> Empezar desde el primer elemento
+      * ============================================================
+      * 🔗 CONNECT-DB2 - Conectar a la base de datos
+      * ============================================================
+       CONNECT-DB2.
+           DISPLAY "🔌 Conectando a DB2..."
+           EXEC SQL
+               CONNECT TO minibank USER 'db2inst1' USING 'password'
+               WITH URI 'HOSTNAME=db;PORT=50000;'
+           END-EXEC.
 
-      *    🔄 Buscar cuenta en el array (máximo 100 cuentas)
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 100
-              IF ACCT-NAME(ACCT-IDX) = WS-ACCOUNT
-      *          ✅ Cuenta encontrada: actualizar saldo existente
-                 ADD WS-AMOUNT-SIGNED TO ACCT-BAL(ACCT-IDX)
-                 MOVE "Y" TO FOUND
-                 EXIT PERFORM         *> Salir del bucle
-              ELSE
-                 IF ACCT-NAME(ACCT-IDX) = SPACES
-      *             🆕 Posición vacía: crear nueva cuenta
-                    MOVE WS-ACCOUNT TO ACCT-NAME(ACCT-IDX)
-                    MOVE 0 TO ACCT-BAL(ACCT-IDX)    *> Inicializar saldo
-                    ADD WS-AMOUNT-SIGNED TO ACCT-BAL(ACCT-IDX)
-                    MOVE "Y" TO FOUND
-                    EXIT PERFORM      *> Salir del bucle
-                 END-IF
-              END-IF
-              ADD 1 TO ACCT-IDX       *> Avanzar al siguiente elemento
-           END-PERFORM
+           EVALUATE SQLCODE
+              WHEN 0
+                 DISPLAY "✅ Conexión exitosa a DB2"
+              WHEN -30081
+                 DISPLAY "❌ Error: No se puede contactar el servidor DB2"
+              WHEN -30082
+                 DISPLAY "❌ Error: Credenciales inválidas"
+              WHEN OTHER
+                 DISPLAY "❌ Error SQL: " SQLCODE
+           END-EVALUATE
+           .
+
+      * ============================================================
+      * 🔗 INSERT-TRANSACTION - Insertar transacción en DB2
+      * ============================================================
+       INSERT-TRANSACTION.
+      *    Preparar variables para DB2
+           MOVE WS-DATE TO DB-TX-DATE
+           MOVE WS-ACCOUNT TO DB-ACCOUNT-NAME
+           MOVE WS-TYPE TO DB-TX-TYPE
+           MOVE WS-AMOUNT-SIGNED TO DB-TX-AMOUNT
+
+      *    Insertar transacción en tabla TRANSACTIONS
+           EXEC SQL
+               INSERT INTO TRANSACTIONS
+                   (ACCOUNT_ID, TRANSACTION_DATE, TRANSACTION_TYPE, AMOUNT)
+               VALUES
+                   ((SELECT ACCOUNT_ID FROM ACCOUNTS
+                     WHERE ACCOUNT_NAME = :DB-ACCOUNT-NAME
+                     FETCH FIRST ROW ONLY),
+                    :DB-TX-DATE,
+                    :DB-TX-TYPE,
+                    :DB-TX-AMOUNT)
+           END-EXEC.
+
+           EVALUATE SQLCODE
+              WHEN 0
+                 DISPLAY "✅ Transacción insertada: "
+                        WS-ACCOUNT " " WS-TYPE " " WS-AMOUNT-STR
+              WHEN 100
+                 DISPLAY "⚠️ Cuenta no encontrada: " WS-ACCOUNT
+                 PERFORM CREATE-ACCOUNT
+              WHEN OTHER
+                 DISPLAY "❌ Error insertando transacción: " SQLCODE
+           END-EVALUATE
+           .
+
+      * ============================================================
+      * 🏦 CREATE-ACCOUNT - Crear nueva cuenta si no existe
+      * ============================================================
+       CREATE-ACCOUNT.
+           MOVE WS-ACCOUNT TO DB-ACCOUNT-NAME
+           MOVE 0 TO DB-BALANCE
+
+           EXEC SQL
+               INSERT INTO ACCOUNTS (ACCOUNT_NAME, BALANCE)
+               VALUES (:DB-ACCOUNT-NAME, :DB-BALANCE)
+           END-EXEC.
+
+           IF SQLCODE = 0
+              DISPLAY "✅ Cuenta creada: " WS-ACCOUNT
+              PERFORM INSERT-TRANSACTION
+           ELSE
+              DISPLAY "❌ Error creando cuenta: " SQLCODE
+           END-IF
+           .
+
+      * ============================================================
+      * 📊 QUERY-BALANCES - Consultar saldos desde DB2
+      * ============================================================
+       QUERY-BALANCES.
+           DISPLAY "📊 Consultando saldos desde DB2...".
+
+           EXEC SQL
+               DECLARE CURSOR1 CURSOR FOR
+               SELECT ACCOUNT_NAME, BALANCE
+               FROM ACCOUNTS
+               ORDER BY ACCOUNT_NAME
+           END-EXEC.
+
+           EXEC SQL
+               OPEN CURSOR1
+           END-EXEC.
+
+           IF SQLCODE NOT = 0
+              DISPLAY "❌ Error abriendo cursor: " SQLCODE
+              EXIT PARAGRAPH
+           END-IF.
+
+           MOVE "N" TO DB-EOF
+           PERFORM UNTIL DB-EOF = "Y"
+              EXEC SQL
+                  FETCH CURSOR1
+                  INTO :DB-ACCOUNT-NAME, :DB-BALANCE
+              END-EXEC
+
+              EVALUATE SQLCODE
+                 WHEN 0
+                    MOVE DB-BALANCE TO FORMATTED-BAL
+                    STRING
+                      DB-ACCOUNT-NAME DELIMITED BY SPACES
+                      ","              DELIMITED BY SIZE
+                      FORMATTED-BAL    DELIMITED BY SIZE
+                      INTO OUT-LINE
+                    END-STRING
+                    WRITE OUT-LINE
+                    DISPLAY "  " DB-ACCOUNT-NAME " " FORMATTED-BAL
+                 WHEN 100
+                    MOVE "Y" TO DB-EOF
+                 WHEN OTHER
+                    DISPLAY "❌ Error en fetch: " SQLCODE
+                    MOVE "Y" TO DB-EOF
+              END-EVALUATE
+           END-PERFORM.
+
+           EXEC SQL
+               CLOSE CURSOR1
+           END-EXEC
+           .
+
+      * ============================================================
+      * 🔗 DISCONNECT-DB2 - Desconectar de DB2
+      * ============================================================
+       DISCONNECT-DB2.
+           DISPLAY "🔌 Desconectando de DB2...".
+           EXEC SQL
+               DISCONNECT ALL
+           END-EXEC.
+
+           IF SQLCODE = 0
+              DISPLAY "✅ Desconexión exitosa"
+           ELSE
+              DISPLAY "⚠️ Advertencia al desconectar: " SQLCODE
+           END-IF
            .
 
       * ------------------------------------------------------------
-      * 📄 WRITE-HEADER - Escribir encabezado CSV
+      *  WRITE-HEADER - Escribir encabezado CSV
       * Escribe la primera línea del archivo de salida
       * ------------------------------------------------------------
        WRITE-HEADER.
            MOVE "account,balance" TO OUT-LINE
            WRITE OUT-LINE
-           .
-
-      * ------------------------------------------------------------
-      * 📊 DUMP-BALANCES - Generar reporte de saldos
-      * Recorre todas las cuentas y escribe sus saldos al archivo
-      * ------------------------------------------------------------
-       DUMP-BALANCES.
-           MOVE 1 TO ACCT-IDX          *> Empezar desde el primer elemento
-
-      *    🔄 Recorrer array de cuentas
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 100
-              IF ACCT-NAME(ACCT-IDX) NOT = SPACES
-      *          📝 Cuenta tiene datos: formatear y escribir
-                 MOVE ACCT-BAL(ACCT-IDX) TO FORMATTED-BAL
-      *          📋 Construir línea CSV: "cuenta,saldo"
-                 STRING
-                   ACCT-NAME(ACCT-IDX) DELIMITED BY SPACES  *> Nombre cuenta
-                   ","                  DELIMITED BY SIZE    *> Separador
-                   FORMATTED-BAL        DELIMITED BY SIZE    *> Saldo formateado
-                   INTO OUT-LINE
-                 END-STRING
-                 WRITE OUT-LINE         *> Escribir línea al archivo
-              END-IF
-              ADD 1 TO ACCT-IDX         *> Siguiente elemento
-           END-PERFORM
            .

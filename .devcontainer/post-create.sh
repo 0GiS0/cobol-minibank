@@ -37,7 +37,7 @@ if [ -z "$(git config --global user.name)" ]; then
 fi
 
 # Verificar que GnuCOBOL está instalado
-echo "🔍 Verifying COBOL compiler..."
+echo "�� Verifying COBOL compiler..."
 if command -v cobc &> /dev/null; then
     COBOL_VERSION=$(cobc --version | head -n 1)
     echo "✅ $COBOL_VERSION"
@@ -50,6 +50,38 @@ fi
 echo "📁 Creating build directory..."
 mkdir -p build
 
+# 🗄️ Configurar DB2 automáticamente
+echo ""
+echo "🗄️ Setting up DB2..."
+
+# Esperar a que DB2 esté disponible (máximo 180 segundos = 3 minutos)
+# Usando /dev/tcp para verificar conexión real, no solo puerto abierto
+DB2_READY=false
+for i in {1..180}; do
+    if (echo > /dev/tcp/db/50000) 2>/dev/null; then
+        echo "✅ DB2 is ready (connection successful)"
+        DB2_READY=true
+        break
+    fi
+    # Mostrar progreso cada 10 segundos para no saturar output
+    if [ $((i % 10)) -eq 0 ]; then
+        echo "⏳ Waiting for DB2... ($i/180 seconds)"
+    fi
+    sleep 1
+done
+
+if [ "$DB2_READY" = true ]; then
+    sleep 3  # Extra wait for DB2 to be fully initialized
+    echo "📊 DB2 ready for connections"
+
+    # Make the connect script executable
+    chmod +x .devcontainer/connect-db2.sh
+else
+    echo "⚠️  DB2 did not start after 3 minutes, but continuing..."
+    echo "    The DB2 container may still be initializing."
+    echo "    You can manually run: .devcontainer/connect-db2.sh"
+fi
+
 # Mostrar estructura del proyecto
 echo ""
 echo "📂 Project structure:"
@@ -61,4 +93,12 @@ echo "   1. Build: make build"
 echo "   2. Run: make run"
 echo "   3. Clean: make clean"
 echo ""
-echo "💡 Tip: Use VS Code tasks (Ctrl+Shift+P > Tasks: Run Task)"
+echo "🗄️ DB2 Information:"
+echo "   • Status: Available on db:50000"
+echo "   • Database: minibank"
+echo "   • User: db2inst1"
+echo ""
+echo "💡 To connect to DB2:"
+echo "   • From terminal: .devcontainer/connect-db2.sh"
+echo "   • Or: db2 CONNECT TO minibank USER db2inst1 USING password"
+echo "   • Initialize tables: db2 -tf .devcontainer/init-db2.sql"
