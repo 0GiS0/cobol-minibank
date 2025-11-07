@@ -1,5 +1,7 @@
 # 🏦 COBOL MiniBank - Sistema Bancario Simplificado
 
+**Español** | **[English](README_EN.md)**
+
 ## 🤔 ¿Qué es este proyecto?
 
 Este es un **repositorio educativo progresivo** para aprender **COBOL** (Common Business-Oriented Language) desde cero hasta integración con bases de datos empresariales. 
