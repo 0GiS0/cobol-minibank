@@ -518,7 +518,7 @@ db2 QUIT
 **1. Excellent pedagogical progression**
 - ✅ Starts simple (CSV) and adds complexity gradually
 - ✅ Each program introduces new concepts without overwhelming
-- ✅ Well-commented code in Spanish (accessible to Spanish speakers)
+- ✅ Well-commented code (note: code comments are in Spanish, but this documentation makes the concepts accessible to English speakers)
 
 **2. Fundamental COBOL concepts well covered**
 - ✅ 4-division structure
