@@ -11,10 +11,11 @@
         "ms-vscode.vscode-json",
         "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker",
-        "mechatroner.rainbow-csv"
+        "mechatroner.rainbow-csv",
+        "bitlang.cobol-themes"
       ],
       "settings": {
-
+        "workbench.colorTheme": "Enterprise COBOL (for entcobol dialect)",
         "files.associations": {
           "*.cob": "COBOL",
           "*.cpy": "COBOL",
@@ -43,19 +44,9 @@
       }
     }
   },
-  "remoteUser": "vscode",
-  "containerUser": "vscode",
+
   "postCreateCommand": ".devcontainer/post-create.sh",
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {
-      "ppa": false
-    },
-    "ghcr.io/devcontainers/features/common-utils:2": {
-      "installZsh": "true",
-      "configureZshAsDefaultShell": true,
-      "installOhMyZsh": true
-    },
-    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "forwardPorts": [],
   "portsAttributes": {},
@@ -63,5 +54,4 @@
   "initializeCommand": "echo '🏦 Initializing COBOL MiniBank development environment...'",
   "onCreateCommand": "echo '📦 Setting up container...'",
   "updateContentCommand": "echo '🔄 Updating dependencies...'",
-  "postStartCommand": "echo '🚀 COBOL MiniBank ready for development!'"
-}
+  "postStartCommand": "echo '🚀 COBOL MiniBank ready for development!'"}

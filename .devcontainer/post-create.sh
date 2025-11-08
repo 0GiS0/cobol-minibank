@@ -28,23 +28,23 @@ else
     echo "✅ Transactions file already exists"
 fi
 
-# Configurar Git si no está configurado
-if [ -z "$(git config --global user.name)" ]; then
-    echo "🔧 Setting up basic Git configuration..."
-    git config --global init.defaultBranch main
-    git config --global core.autocrlf input
-    git config --global core.editor "code --wait"
-fi
+# # Configurar Git si no está configurado
+# if [ -z "$(git config --global user.name)" ]; then
+#     echo "🔧 Setting up basic Git configuration..."
+#     git config --global init.defaultBranch main
+#     git config --global core.autocrlf input
+#     git config --global core.editor "code --wait"
+# fi
 
-# Verificar que GnuCOBOL está instalado
-echo "�� Verifying COBOL compiler..."
-if command -v cobc &> /dev/null; then
-    COBOL_VERSION=$(cobc --version | head -n 1)
-    echo "✅ $COBOL_VERSION"
-else
-    echo "❌ COBOL compiler not found!"
-    exit 1
-fi
+# # Verificar que GnuCOBOL está instalado
+# echo "�� Verifying COBOL compiler..."
+# if command -v cobc &> /dev/null; then
+#     COBOL_VERSION=$(cobc --version | head -n 1)
+#     echo "✅ $COBOL_VERSION"
+# else
+#     echo "❌ COBOL compiler not found!"
+#     exit 1
+# fi
 
 # Crear directorio de build si no existe
 echo "📁 Creating build directory..."
@@ -58,7 +58,7 @@ echo "🗄️ Setting up DB2..."
 # Usando /dev/tcp para verificar conexión real, no solo puerto abierto
 DB2_READY=false
 for i in {1..180}; do
-    if (echo > /dev/tcp/db/50000) 2>/dev/null; then
+    if (echo > /dev/tcp/localhost/50000) 2>/dev/null; then
         echo "✅ DB2 is ready (connection successful)"
         DB2_READY=true
         break
@@ -77,8 +77,11 @@ if [ "$DB2_READY" = true ]; then
     # ✨ Inicializar BD2 con datos de ejemplo
     echo ""
     echo "🎯 Ejecutando inicialización de DB2..."
-    python3 .devcontainer/init-db2-python.py
-    python3 .devcontainer/load-sample-data.py
+    .devcontainer/init-db2-cli.sh
+    .devcontainer/load-sample-data-cli.sh
+    .devcontainer/get-accounts-cli.sh
+    .devcontainer/get-transactions-cli.sh
+
 else
     echo "⚠️  DB2 did not start after 3 minutes, but continuing..."
     echo "    The DB2 container may still be initializing."

@@ -12,7 +12,7 @@ from datetime import datetime
 # Configuración de conexión
 DB_CONFIG = {
     'database': 'minibank',
-    'hostname': 'db',
+    'hostname': 'localhost',
     'port': 50000,
     'user': 'db2inst1',
     'password': 'password'

@@ -1,6 +1,6 @@
       ******************************************************************
       * COBOL MINIBANK - SISTEMA BANCARIO CON DB2
-      * Procesa transacciones via interfaz Python
+      * Procesa transacciones via scripts CLI de DB2
       ******************************************************************
 
        IDENTIFICATION DIVISION.
@@ -35,8 +35,8 @@
        77  RC                   PIC S9(9) COMP.
        77  EOF                  PIC X VALUE "N".
        77  WS-LINE              PIC X(256).
-       77  PYTHON-CMD           PIC X(256)
-           VALUE "python3 .devcontainer/db2-interface.py".
+       77  DB2-CLI-CMD          PIC X(256)
+           VALUE ".devcontainer/get-accounts-cli.sh".
 
        77  WS-DATE              PIC X(10).
        77  WS-ACCOUNT           PIC X(30).
@@ -76,16 +76,10 @@
            GOBACK.
 
        CONNECT-TO-DB2.
-           DISPLAY "Conectando a DB2..." UPON CONSOLE
-           MOVE FUNCTION CONCATENATE(PYTHON-CMD, " connect")
-               TO CMD-LINE
-           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
+           DISPLAY "Conectando a DB2..." UPON CONSOLE.
 
        DISCONNECT-FROM-DB2.
-           DISPLAY "Desconectando de DB2..." UPON CONSOLE
-           MOVE FUNCTION CONCATENATE(PYTHON-CMD, " disconnect")
-               TO CMD-LINE
-           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
+           DISPLAY "Desconectando de DB2..." UPON CONSOLE.
 
        PARSE-LINE.
            UNSTRING WS-LINE DELIMITED BY ALL ","
@@ -102,21 +96,18 @@
            END-IF.
 
        INSERT-VIA-PYTHON.
-           MOVE FUNCTION TRIM(WS-ACCOUNT) TO WS-ACCOUNT.
            MOVE FUNCTION TRIM(WS-DATE) TO WS-DATE.
            MOVE FUNCTION TRIM(WS-TYPE) TO WS-TYPE.
            MOVE FUNCTION TRIM(WS-AMOUNT-STR) TO WS-AMOUNT-STR.
-           MOVE FUNCTION CONCATENATE(
-               PYTHON-CMD, " insert ", WS-ACCOUNT, " ",
-               WS-DATE, " ", WS-TYPE, " ", WS-AMOUNT-STR)
-               TO CMD-LINE.
-           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
 
        GET-BALANCES-FROM-DB2.
            DISPLAY "Consultando saldos desde DB2..." UPON CONSOLE
-           MOVE FUNCTION CONCATENATE(
-               PYTHON-CMD, " balances > ", DB-PATH)
-               TO CMD-LINE.
+           MOVE DB2-CLI-CMD TO CMD-LINE
+           CALL "SYSTEM" USING CMD-LINE RETURNING RC
+
+      *    Copiar datos desde tmp a ubicación esperada
+           MOVE "cp /tmp/minibank-accounts.tmp /tmp/db2-balances.csv"
+               TO CMD-LINE
            CALL "SYSTEM" USING CMD-LINE RETURNING RC.
 
        WRITE-HEADER.

@@ -158,18 +158,23 @@ Sus características principales:
 ### 4️⃣ MiniBank con EXEC SQL (`minibank-sql.cbl`)
 
 **Nivel:** Avanzado
-**Propósito:** Aprender SQL embebido en COBOL
+**Propósito:** Aprender SQL embebido en COBOL (con precompilador ocesql)
+
+**⚠️ IMPORTANTE:**
+```
+ocesql es solo para PostgreSQL, NO para DB2.
+Si necesitas DB2, usa minibank-db2.cob (que ya funciona).
+```
 
 **¿Qué hace?**
-Este programa demuestra cómo usar **`EXEC SQL`** para interactuar con bases de datos PostgreSQL directamente desde COBOL, sin necesidad de scripts Python intermedios.
+Este programa demuestra cómo usar **`EXEC SQL`** para interactuar con bases de datos **PostgreSQL** directamente desde COBOL usando el precompilador ocesql.
 
 **Características:**
-- ✅ `CONNECT` a base de datos
+- ✅ `CONNECT` a base de datos PostgreSQL
 - ✅ `CREATE TABLE` con definición inline
 - ✅ `INSERT INTO` con bind variables
-- ✅ `SELECT` y `FETCH` con cursores
-- ✅ `UPDATE` de registros
-- ✅ `DISCONNECT`
+- ✅ Sintaxis SQL estándar SQL92
+- ✅ ❌ **NO funciona con DB2** (ocesql solo es para PostgreSQL)
 
 **Compilación automática:**
 ```bash
@@ -182,7 +187,7 @@ make run-sql       # Ejecuta el programa
 ```
 minibank-sql.cbl (COBOL con EXEC SQL)
     ↓ ocesql (precompilador)
-minibank-sql-processed.cbl (COBOL puro + CALL a libocesql)
+minibank-sql-processed.cbl (COBOL puro + CALL a libocesql/libpq)
     ↓ cobc (compilador GNU COBOL)
 build/minibank-sql (ejecutable)
 ```
@@ -190,12 +195,19 @@ build/minibank-sql (ejecutable)
 ### ✨ Open Cobol ESQL (ocesql)
 
 **¿Qué es?**
-Un precompilador que convierte `EXEC SQL...END-EXEC` en llamadas a funciones C en tiempo de compilación.
+Un precompilador que convierte `EXEC SQL...END-EXEC` en llamadas a funciones de PostgreSQL en tiempo de compilación.
+
+**⚠️ Limitaciones:**
+- ✅ Funciona con: **PostgreSQL**
+- ❌ NO funciona con: **IBM DB2** (usa libpq, no db2 CLI)
+- ❌ NO funciona con: Oracle, SQL Server, etc.
 
 **Instalación:**
 Ya está incluida en el Dockerfile del Dev Container. Se compila desde [github.com/opensourcecobol/Open-COBOL-ESQL](https://github.com/opensourcecobol/Open-COBOL-ESQL)
 
-**Documentación completa:** Ver `OCESQL.md` en la raíz del proyecto
+**Documentación completa:**
+- Ver `OCESQL.md` - Guía de uso específica
+- Ver `BASES_DE_DATOS.md` - Comparativa de todas las opciones
 
 **Ejemplo de uso:**
 ```cobol
@@ -212,6 +224,20 @@ PROCEDURE DIVISION.
         DISPLAY "Insertado exitosamente"
     END-IF.
 ```
+
+---
+
+## 📚 Documentación de Bases de Datos
+
+Para una **comparativa detallada** de las tres opciones y cómo usar cada una, consulta:
+
+**→ [`BASES_DE_DATOS.md`](BASES_DE_DATOS.md)**
+
+Incluye:
+- Comparativa: minibank.cob vs minibank-db2.cob vs minibank-sql.cbl
+- Explicación de por qué ocesql no funciona con DB2
+- Cómo cambiar a PostgreSQL si quieres usar ocesql
+- Recomendaciones según tu caso de uso
 
 ---
 

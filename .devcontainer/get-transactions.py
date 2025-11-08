@@ -10,7 +10,7 @@ account_id = sys.argv[1] if len(sys.argv) > 1 else "1"
 
 try:
     conn = ibm_db.connect(
-        "DATABASE=minibank;HOSTNAME=db;PORT=50000;UID=db2inst1;PWD=password;",
+        "DATABASE=minibank;HOSTNAME=localhost;PORT=50000;UID=db2inst1;PWD=password;",
         "", ""
     )
 

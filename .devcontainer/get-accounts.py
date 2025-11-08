@@ -8,7 +8,7 @@ import sys
 
 try:
     conn = ibm_db.connect(
-        "DATABASE=minibank;HOSTNAME=db;PORT=50000;UID=db2inst1;PWD=password;",
+        "DATABASE=minibank;HOSTNAME=localhost;PORT=50000;UID=db2inst1;PWD=password;",
         "", ""
     )
 

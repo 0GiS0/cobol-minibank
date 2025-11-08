@@ -15,7 +15,7 @@ except ImportError:
     sys.exit(1)
 
 # Connection parameters
-DB_HOST = "db"
+DB_HOST = "localhost"
 DB_PORT = "50000"
 DB_NAME = "minibank"
 DB_USER = "db2inst1"

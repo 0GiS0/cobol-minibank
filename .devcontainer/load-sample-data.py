@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 # Configuración
 DB_CONFIG = {
     'database': 'minibank',
-    'hostname': 'db',
+    'hostname': 'localhost',
     'port': 50000,
     'user': 'db2inst1',
     'password': 'password'
