@@ -36,9 +36,9 @@
        77  EOF                  PIC X VALUE "N".
        77  WS-LINE              PIC X(256).
        77  INSERT-SCRIPT        PIC X(256)
-           VALUE "bash .devcontainer/insert-transaction-cli.sh".
+           VALUE "bash db2-helpers/insert-transaction-cli.sh".
        77  GET-BALANCES-SCRIPT  PIC X(256)
-           VALUE "bash .devcontainer/get-balances-cli.sh".
+           VALUE "bash db2-helpers/get-balances-cli.sh".
 
        77  WS-DATE              PIC X(10).
        77  WS-ACCOUNT           PIC X(30).

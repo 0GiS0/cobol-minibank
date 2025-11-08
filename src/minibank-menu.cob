@@ -47,9 +47,9 @@
 
       *    Variables para scripts DB2
            77  LOAD-ACCOUNTS-SCRIPT    PIC X(256)
-               VALUE "bash .devcontainer/load-accounts-cli.sh".
+               VALUE "bash db2-helpers/load-accounts-cli.sh".
            77  LOAD-TRANSACTIONS-SCRIPT PIC X(256)
-               VALUE "bash .devcontainer/load-transactions-cli.sh".
+               VALUE "bash db2-helpers/load-transactions-cli.sh".
 
       * VARIABLES DE DATOS
            77  WS-ACCOUNT-ID    PIC X(30).
