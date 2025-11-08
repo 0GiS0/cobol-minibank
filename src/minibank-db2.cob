@@ -35,8 +35,10 @@
        77  RC                   PIC S9(9) COMP.
        77  EOF                  PIC X VALUE "N".
        77  WS-LINE              PIC X(256).
-       77  DB2-CLI-CMD          PIC X(256)
-           VALUE ".devcontainer/get-accounts-cli.sh".
+       77  INSERT-SCRIPT        PIC X(256)
+           VALUE "bash .devcontainer/insert-transaction-cli.sh".
+       77  GET-BALANCES-SCRIPT  PIC X(256)
+           VALUE "bash .devcontainer/get-balances-cli.sh".
 
        77  WS-DATE              PIC X(10).
        77  WS-ACCOUNT           PIC X(30).
@@ -62,7 +64,7 @@
                  NOT AT END
                     MOVE TX-LINE TO WS-LINE
                     PERFORM PARSE-LINE
-                    PERFORM INSERT-VIA-PYTHON
+                    PERFORM INSERT-VIA-DB2-CLI
               END-READ
            END-PERFORM.
 
@@ -95,19 +97,35 @@
               MULTIPLY -1 BY WS-AMOUNT-SIGNED
            END-IF.
 
-       INSERT-VIA-PYTHON.
+       INSERT-VIA-DB2-CLI.
+      *    Preparar los valores para el script bash
            MOVE FUNCTION TRIM(WS-DATE) TO WS-DATE.
+           MOVE FUNCTION TRIM(WS-ACCOUNT) TO WS-ACCOUNT.
            MOVE FUNCTION TRIM(WS-TYPE) TO WS-TYPE.
            MOVE FUNCTION TRIM(WS-AMOUNT-STR) TO WS-AMOUNT-STR.
 
-       GET-BALANCES-FROM-DB2.
-           DISPLAY "Consultando saldos desde DB2..." UPON CONSOLE
-           MOVE DB2-CLI-CMD TO CMD-LINE
-           CALL "SYSTEM" USING CMD-LINE RETURNING RC
+      *    Construir comando para invocar script bash con parámetros
+      *    Usar WS-AMOUNT-STR en lugar de WS-AMOUNT-SIGNED
+           STRING
+               INSERT-SCRIPT DELIMITED BY SIZE
+               " " DELIMITED BY SIZE
+               FUNCTION TRIM(WS-DATE) DELIMITED BY SIZE
+               " " DELIMITED BY SIZE
+               FUNCTION TRIM(WS-ACCOUNT) DELIMITED BY SIZE
+               " " DELIMITED BY SIZE
+               FUNCTION TRIM(WS-TYPE) DELIMITED BY SIZE
+               " " DELIMITED BY SIZE
+               FUNCTION TRIM(WS-AMOUNT-STR) DELIMITED BY SIZE
+               INTO CMD-LINE
+           END-STRING
 
-      *    Copiar datos desde tmp a ubicación esperada
-           MOVE "cp /tmp/minibank-accounts.tmp /tmp/db2-balances.csv"
-               TO CMD-LINE
+           CALL "SYSTEM" USING CMD-LINE RETURNING RC.
+
+       GET-BALANCES-FROM-DB2.
+           DISPLAY "Consultando saldos desde DB2..." UPON CONSOLE.
+
+      *    Invocar script bash para obtener saldos
+           MOVE GET-BALANCES-SCRIPT TO CMD-LINE
            CALL "SYSTEM" USING CMD-LINE RETURNING RC.
 
        WRITE-HEADER.

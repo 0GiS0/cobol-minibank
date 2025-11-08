@@ -43,25 +43,32 @@
            77  WS-RC             PIC S9(9) COMP.
            77  EOF               PIC X VALUE "N".
            77  WS-LINE           PIC X(256).
-           77  CMD-STRING        PIC X(256).
+           77  CMD-STRING        PIC X(512).
+
+      *    Variables para scripts DB2
+           77  LOAD-ACCOUNTS-SCRIPT    PIC X(256)
+               VALUE "bash .devcontainer/load-accounts-cli.sh".
+           77  LOAD-TRANSACTIONS-SCRIPT PIC X(256)
+               VALUE "bash .devcontainer/load-transactions-cli.sh".
 
       * VARIABLES DE DATOS
-           77  WS-ACCOUNT-ID    PIC 9(4) COMP.
+           77  WS-ACCOUNT-ID    PIC X(30).
            77  WS-ACCOUNT-NAME  PIC X(100).
            77  WS-BALANCE       PIC S9(13)V9(2) COMP-3.
            77  WS-FORMATTED-AMT PIC -(12)9.99.
+           77  WS-ACC-ID-NUM    PIC 9(4) COMP VALUE 0.
 
       * ARRAYS PARA ALMACENAR CUENTAS (cargar una sola vez)
            01  ACCOUNTS-TABLE.
                05  ACCOUNT OCCURS 50 TIMES.
-                   10  ACC-ID            PIC 9(4) COMP.
+                   10  ACC-ID            PIC X(30).
                    10  ACC-NAME          PIC X(100).
                    10  ACC-BALANCE       PIC S9(13)V9(2) COMP-3.
 
       * ARRAY PARA TRANSACCIONES (se carga segun necesidad)
            01  TRANSACTIONS-TABLE.
                05  TRANSACTION OCCURS 200 TIMES.
-                   10  TRANS-ID          PIC 9(9) COMP.
+                   10  TRANS-ID          PIC X(50).
                    10  TRANS-DATE        PIC X(10).
                    10  TRANS-TYPE        PIC X(10).
                    10  TRANS-AMOUNT      PIC S9(13)V9(2) COMP-3.
@@ -73,7 +80,7 @@
            77  J                 PIC 9(4) COMP.
 
       * VARIABLES PARA PARSING
-           77  WS-PARSE-ID       PIC 9(4) COMP.
+           77  WS-PARSE-ID       PIC X(30).
            77  WS-PARSE-AMT      PIC X(20).
 
       * PROCEDURE DIVISION
@@ -276,9 +283,8 @@
            MOVE 0 TO ACCT-COUNT.
            MOVE "N" TO EOF.
 
-      *    Ejecuta script Python para obtener cuentas
-           MOVE "python3 .devcontainer/get-accounts.py"
-               TO CMD-STRING.
+      *    Ejecutar script bash para obtener cuentas
+           MOVE LOAD-ACCOUNTS-SCRIPT TO CMD-STRING
            CALL "SYSTEM" USING CMD-STRING
                RETURNING WS-RC.
 
@@ -323,10 +329,11 @@
            MOVE 0 TO TRANS-COUNT.
            MOVE "N" TO EOF.
 
-      *    Ejecuta script Python para obtener transacciones
-           STRING "python3 .devcontainer/get-transactions.py "
-               DELIMITED BY SIZE
-               WS-ACCOUNT-ID DELIMITED BY SIZE
+      *    Ejecutar script bash para obtener transacciones
+           STRING
+               LOAD-TRANSACTIONS-SCRIPT DELIMITED BY SIZE
+               " " DELIMITED BY SIZE
+               FUNCTION TRIM(WS-ACCOUNT-ID) DELIMITED BY SIZE
                INTO CMD-STRING
            END-STRING.
 
