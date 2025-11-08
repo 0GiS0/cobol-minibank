@@ -4,7 +4,7 @@
 
 ## 🤔 ¿Qué es este proyecto?
 
-Este es un **repositorio educativo progresivo** para aprender **COBOL** (Common Business-Oriented Language) desde cero hasta integración con bases de datos empresariales. 
+Este es un **repositorio educativo progresivo** para aprender **COBOL** (Common Business-Oriented Language) desde cero hasta integración con bases de datos empresariales.
 
 Incluye **3 programas COBOL** de complejidad creciente:
 1. 📄 **MiniBank Básico** - Procesamiento de archivos CSV
@@ -19,7 +19,7 @@ Perfecto para **principiantes que nunca han visto COBOL** y quieren entender có
 
 ### 1️⃣ MiniBank Básico (`minibank.cob`)
 
-**Nivel:** Principiante  
+**Nivel:** Principiante
 **Propósito:** Aprender fundamentos de COBOL con archivos
 
 **¿Qué hace?**
@@ -59,7 +59,7 @@ ACC-002,500.00
 
 ### 2️⃣ MiniBank DB2 (`minibank-db2.cob`)
 
-**Nivel:** Intermedio  
+**Nivel:** Intermedio
 **Propósito:** Integración COBOL + Base de datos DB2
 
 **¿Qué hace?**
@@ -94,7 +94,7 @@ COBOL Program ──> Python Script ──> DB2 Database
 
 ### 3️⃣ MiniBank Menu (`minibank-menu.cob`)
 
-**Nivel:** Avanzado  
+**Nivel:** Avanzado
 **Propósito:** Sistema interactivo completo con menú
 
 **¿Qué hace?**
@@ -150,6 +150,68 @@ Sus características principales:
 - 🎯 **Precisión decimal**: Ideal para cálculos financieros
 - 🏗️ **Estabilidad**: Programas que funcionan décadas sin modificarse
 - ⚡ **Procesamiento masivo**: Maneja millones de registros eficientemente
+
+---
+
+## 🗄️ COBOL con SQL Embebido - Open Cobol ESQL
+
+### 4️⃣ MiniBank con EXEC SQL (`minibank-sql.cbl`)
+
+**Nivel:** Avanzado
+**Propósito:** Aprender SQL embebido en COBOL
+
+**¿Qué hace?**
+Este programa demuestra cómo usar **`EXEC SQL`** para interactuar con bases de datos PostgreSQL directamente desde COBOL, sin necesidad de scripts Python intermedios.
+
+**Características:**
+- ✅ `CONNECT` a base de datos
+- ✅ `CREATE TABLE` con definición inline
+- ✅ `INSERT INTO` con bind variables
+- ✅ `SELECT` y `FETCH` con cursores
+- ✅ `UPDATE` de registros
+- ✅ `DISCONNECT`
+
+**Compilación automática:**
+```bash
+make build-sql     # Precompila con ocesql + compila con cobc
+make run-sql       # Ejecuta el programa
+```
+
+**¿Cómo funciona?**
+
+```
+minibank-sql.cbl (COBOL con EXEC SQL)
+    ↓ ocesql (precompilador)
+minibank-sql-processed.cbl (COBOL puro + CALL a libocesql)
+    ↓ cobc (compilador GNU COBOL)
+build/minibank-sql (ejecutable)
+```
+
+### ✨ Open Cobol ESQL (ocesql)
+
+**¿Qué es?**
+Un precompilador que convierte `EXEC SQL...END-EXEC` en llamadas a funciones C en tiempo de compilación.
+
+**Instalación:**
+Ya está incluida en el Dockerfile del Dev Container. Se compila desde [github.com/opensourcecobol/Open-COBOL-ESQL](https://github.com/opensourcecobol/Open-COBOL-ESQL)
+
+**Documentación completa:** Ver `OCESQL.md` en la raíz del proyecto
+
+**Ejemplo de uso:**
+```cobol
+EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+    01  ACCT-ID     PIC X(30).
+    01  BALANCE     PIC S9(13)V9(2) COMP-3.
+EXEC SQL END DECLARE SECTION END-EXEC.
+
+PROCEDURE DIVISION.
+    EXEC SQL
+        INSERT INTO ACCOUNTS VALUES (:ACCT-ID, :BALANCE)
+    END-EXEC.
+    IF SQLCODE = 0
+        DISPLAY "Insertado exitosamente"
+    END-IF.
+```
 
 ---
 
@@ -376,7 +438,7 @@ END-IF.
 PERFORM UNTIL WS-CONTINUE = "N"
     PERFORM SHOW-MENU
     PERFORM GET-USER-CHOICE
-    
+
     EVALUATE WS-CHOICE
         WHEN 1 PERFORM OPTION-1
         WHEN 2 PERFORM OPTION-2
@@ -599,16 +661,16 @@ Este repo lo omite porque JCL es específico de mainframe (no corre en Linux).
 **1. Agregar ejemplo con EXEC SQL nativo**
 ```cobol
        EXEC SQL INCLUDE SQLCA END-EXEC.
-       
+
        EXEC SQL
            CONNECT TO minibank USER db2inst1 USING password
        END-EXEC.
-       
+
        EXEC SQL
            INSERT INTO TRANSACTIONS (ACCOUNT_ID, TX_DATE, TX_TYPE, AMOUNT)
            VALUES (:WS-ACCOUNT-ID, :WS-DATE, :WS-TYPE, :WS-AMOUNT)
        END-EXEC.
-       
+
        IF SQLCODE NOT = 0
            DISPLAY "Error SQL: " SQLCODE
        END-IF.
@@ -660,7 +722,7 @@ import subprocess
 @app.route('/transfer', methods=['POST'])
 def transfer():
     # Llamar programa COBOL
-    result = subprocess.run(['./minibank-transfer', 
+    result = subprocess.run(['./minibank-transfer',
                             request.json['from_account'],
                             request.json['to_account'],
                             request.json['amount']])

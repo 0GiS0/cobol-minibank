@@ -15,6 +15,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 # ==========================================
+# Instalar Open Cobol ESQL (ocesql)
+# ==========================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev autoconf automake libtool m4 bison flex && \
+    rm -rf /var/lib/apt/lists/*
+
+# Descargar, compilar e instalar Open Cobol ESQL v1.4
+RUN cd /tmp && \
+    curl -fsSL https://github.com/opensourcecobol/Open-COBOL-ESQL/archive/refs/tags/v1.4.tar.gz -o v1.4.tar.gz && \
+    tar -xzf v1.4.tar.gz && \
+    cd Open-COBOL-ESQL-1.4 && \
+    ./autogen.sh && \
+    ./configure --prefix=/usr/local && \
+    make && \
+    make install && \
+    ldconfig /usr/local/lib && \
+    cd /tmp && rm -rf Open-COBOL-ESQL-1.4 v1.4.tar.gz && \
+    echo "✅ Open Cobol ESQL v1.4 instalado en /usr/local"
+
+# ==========================================
 # Instalar cliente Python para DB2 (ibm-db)
 # ==========================================
 # Actualizar pip y setuptools para asegurar compatibilidad

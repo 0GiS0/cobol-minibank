@@ -26,10 +26,12 @@ src/minibank-test
 .deps/
 *.dylib.dSYM/
 
-# ===== IGNORA TODO EXCEPTO .COB EN DIRECTORIOS ESPECÍFICOS =====
-# Ignora todos los archivos en src/ excepto .cob
+# ===== IGNORA TODO EXCEPTO .COB Y .CBL EN DIRECTORIOS ESPECÍFICOS =====
+# Ignora todos los archivos en src/ excepto .cob, .cbl y -processed.cbl
 src/**
 !src/*.cob
+!src/*.cbl
+!src/*-processed.cbl
 !src/copybooks/
 src/copybooks/**
 !src/copybooks/*.cpy
