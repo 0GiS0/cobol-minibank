@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.db2
+      dockerfile: Dockerfile
     # image: icr.io/db2_community/db2:latest
     hostname: db2server
     privileged: true
