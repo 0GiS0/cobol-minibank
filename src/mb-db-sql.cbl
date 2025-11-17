@@ -63,6 +63,8 @@
                    PERFORM DB-DO-DEPOSIT
                WHEN 'WITHDRW '
                    PERFORM DB-DO-WITHDRAW
+               WHEN 'LISTACCT '
+                   PERFORM DB-LIST-ACCOUNTS
                WHEN OTHER
                    MOVE 16 TO DB-STATUS
                    MOVE 'Función desconocida' TO DB-MESSAGE
@@ -239,4 +241,65 @@
            MOVE FUNCTION NUMVAL(WS-BAL-FROM-FILE) TO DB-BALANCE
            MOVE 0 TO DB-STATUS
            MOVE SPACES TO DB-MESSAGE
+           .
+
+      * ============================================================
+      * 📋 LISTAR TODAS LAS CUENTAS
+      * ============================================================
+       DB-LIST-ACCOUNTS.
+           MOVE 0 TO DB-STATUS
+           MOVE SPACES TO DB-MESSAGE
+           MOVE 'N' TO DB-LIST-TRUNCATED
+           MOVE 0 TO DB-LIST-COUNT
+
+           IF WS-CONNECTED NOT = 'Y'
+               MOVE 1 TO DB-STATUS
+               MOVE 'No conectado a DB2' TO DB-MESSAGE
+               EXIT PARAGRAPH
+           END-IF
+
+           *> Ejecutar script de DB2 para obtener saldos
+           MOVE WS-BALANCES-SCRIPT TO WS-COMMAND
+           CALL "SYSTEM" USING WS-COMMAND GIVING WS-RETURN-CODE
+
+           IF WS-RETURN-CODE NOT = 0
+               MOVE 8 TO DB-STATUS
+               MOVE 'Error al obtener lista de cuentas (CLI)'
+                   TO DB-MESSAGE
+               EXIT PARAGRAPH
+           END-IF
+
+           MOVE 'N' TO WS-EOF-FLAG
+           OPEN INPUT BALANCES-FILE
+
+           *> Leer todas las cuentas hasta el límite
+           PERFORM UNTIL WS-EOF-FLAG = 'Y'
+                   OR DB-LIST-COUNT >= DB-LIST-MAX
+               READ BALANCES-FILE INTO WS-BALANCE-LINE
+                   AT END
+                       MOVE 'Y' TO WS-EOF-FLAG
+                   NOT AT END
+                       PERFORM ADD-ACCOUNT-TO-LIST
+               END-READ
+           END-PERFORM
+
+           CLOSE BALANCES-FILE
+
+           *> Verificar si se truncó la lista
+           IF WS-EOF-FLAG NOT = 'Y'
+               MOVE 'Y' TO DB-LIST-TRUNCATED
+               MOVE 'Lista truncada - mostrando primeras cuentas'
+                   TO DB-MESSAGE
+           ELSE
+               MOVE 'Todas las cuentas listadas' TO DB-MESSAGE
+           END-IF
+           .
+
+       ADD-ACCOUNT-TO-LIST.
+           PERFORM PARSE-BALANCE-LINE
+           ADD 1 TO DB-LIST-COUNT
+           SET DB-IX TO DB-LIST-COUNT
+           MOVE WS-ACC-ID-FROM-FILE TO DB-LIST-ACCOUNT-ID(DB-IX)
+           MOVE FUNCTION NUMVAL(WS-BAL-FROM-FILE)
+               TO DB-LIST-BALANCE(DB-IX)
            .

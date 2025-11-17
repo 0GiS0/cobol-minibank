@@ -390,9 +390,7 @@
                WHEN 'CSV'
                    PERFORM LIST-ACCOUNTS-CSV
                WHEN 'DB2'
-                   DISPLAY '⚠️  Listar todas las cuentas de DB2'
-                   DISPLAY '   (Funcionalidad disponible en próximas'
-                   DISPLAY '    versiones)'
+                   PERFORM LIST-ACCOUNTS-DB2
            END-EVALUATE
            .
 
@@ -407,6 +405,40 @@
                DISPLAY ACC-ID(IX-ACC)
                    ' | ' ACC-BALANCE(IX-ACC)
            END-PERFORM
+
+           DISPLAY ' '
+           .
+
+       LIST-ACCOUNTS-DB2.
+           MOVE 'LISTACCT ' TO DB-FUNC
+           MOVE 0 TO DB-STATUS
+           MOVE SPACES TO DB-MESSAGE
+           MOVE 0 TO DB-LIST-COUNT
+
+           CALL WS-MOD-DB-NAME USING DB-REQUEST
+
+           IF NOT DB-OK
+               DISPLAY '❌ ERROR: ' DB-MESSAGE
+               EXIT PARAGRAPH
+           END-IF
+
+           DISPLAY ' '
+           DISPLAY '📊 ===== CUENTAS REGISTRADAS (DB2) ====='
+           DISPLAY 'ID               | Saldo'
+           DISPLAY '----------------------------------------'
+
+           PERFORM VARYING DB-IX FROM 1 BY 1
+               UNTIL DB-IX > DB-LIST-COUNT
+               DISPLAY DB-LIST-ACCOUNT-ID(DB-IX)
+                   ' | ' DB-LIST-BALANCE(DB-IX)
+           END-PERFORM
+
+           DISPLAY ' '
+           DISPLAY '📈 Total de cuentas: ' DB-LIST-COUNT
+
+           IF DB-LIST-FULL
+               DISPLAY '⚠️  ' DB-MESSAGE
+           END-IF
 
            DISPLAY ' '
            .

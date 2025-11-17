@@ -1,8 +1,11 @@
 ---
 name: 📊 Impact Analyzer
 description: 'Analyzes impact of changes in COBOL code, dependencies and system architecture'
-model: Claude Sonnet 4 (copilot)
-tools: []
+model: Claude Sonnet 4.5 (copilot)
+handoffs:
+  - label: "🔧 Implement Modules"
+    agent: cobol-module-builder
+    prompt: "Implement the planned modules in this COBOL project"
 ---
 
 # 📊 COBOL Impact Analyzer
