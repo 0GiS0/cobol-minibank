@@ -2,13 +2,20 @@
 
 ## 🏗️ Architecture Overview
 
-This is a **progressive educational COBOL repository** with 3 programs of increasing complexity:
+This is a **modular educational COBOL repository** featuring a sophisticated dual-mode architecture:
 
-1. **`minibank.cob`** - Basic CSV file processing (entry level)
-2. **`minibank-db2.cob`** - DB2 integration via Python wrapper (intermediate)  
-3. **`minibank-menu.cob`** - Interactive menu system with DB2 (advanced)
+**Current Modular Architecture (2025):**
+- **`mb-main.cbl`** (MBMAIN) - Main interactive application with dual-mode support
+- **`mb-db-sql.cbl`** (MBDBSQL) - DB2 database access module 
+- **`mb-db-cli.cbl`** (MBDBCLI) - Stub/testing module with simulated data
+- **`mb-db-if.cpy`** - Shared copybook defining the interface contract
 
-All programs process banking transactions but use different data sources and interfaces to demonstrate COBOL evolution from batch processing to interactive systems.
+**Legacy Educational Programs (reference):**
+- **`minibank.cob`** - Basic CSV file processing (entry level)
+- **`minibank-db2.cob`** - DB2 integration via Python wrapper (intermediate)  
+- **`minibank-menu.cob`** - Interactive menu system with DB2 (advanced)
+
+The system demonstrates COBOL's evolution from monolithic programs to modular, pluggable architectures used in modern enterprise systems.
 
 ## 🔧 Development Environment
 
@@ -22,31 +29,43 @@ All programs process banking transactions but use different data sources and int
 
 ## 🚀 Essential Workflows
 
-### Build & Run Commands
+### Current Modular System Commands
 ```bash
-# Basic program (most common)
-make run                 # Builds + executes minibank.cob
+# Main program with dual-mode support
+make run-menu           # Builds mb-main + modules, initializes DB2, runs interactive app
 
-# DB2 integrated program  
-make run-db2            # Initializes DB2 + builds + executes minibank-db2.cob
+# Individual module builds (for development)
+cobc -x -Wall -O2 -I src/copybooks -o src/mb-main src/mb-main.cbl
+cobc -x -Wall -O2 -I src/copybooks -o src/mb-db-sql src/mb-db-sql.cbl  
+cobc -x -Wall -O2 -I src/copybooks -o src/mb-db-cli src/mb-db-cli.cbl
 
-# Interactive menu program
-make run-menu           # Loads DB2 data + builds + executes minibank-menu.cob
-
-# Individual builds
-make build              # Compiles minibank.cob only
-make build-db2          # Compiles minibank-db2.cob only  
-make build-menu         # Compiles minibank-menu.cob only
+# Legacy educational programs (still functional)
+make run                # Basic CSV processing (minibank.cob)
+make run-db2           # DB2 via Python wrapper (minibank-db2.cob)
 ```
 
-### DB2 Integration Pattern
-COBOL programs don't use embedded SQL (`EXEC SQL`) - instead they use **Python wrapper pattern**:
+### Dual-Mode Architecture Pattern
+The main program (`MBMAIN`) dynamically selects database modules at runtime:
+
+```cobol
+*> Environment variable determines which DB module to load
+ACCEPT WS-ENV-DB-MODULE FROM ENVIRONMENT 'MINIBANK_DB_MODULE'
+MOVE WS-ENV-DB-MODULE TO WS-MOD-DB-NAME
+
+*> Runtime module selection via CALL
+CALL WS-MOD-DB-NAME USING DB-REQUEST
 ```
-COBOL → CALL "SYSTEM" → Python script → ibm_db → DB2
-```
-- Python scripts in `.devcontainer/` handle DB2 operations
-- COBOL passes parameters via command line and temp files
-- Pattern avoids DB2 precompiler complexity while maintaining educational focus
+
+**Configuration:**
+- `MINIBANK_DB_MODULE=MBDBSQL ` → Production DB2 mode
+- `MINIBANK_DB_MODULE=MBDBCLI ` → Development/testing mode
+- `MINIBANK_DATA_SOURCE=CSV` → Legacy CSV mode (bypasses modules)
+
+### Module Interface Contract
+All database modules implement the same interface defined in `mb-db-if.cpy`:
+- **Functions**: `INIT`, `FINISH`, `BALANCE`, `DEPOSIT`, `WITHDRW`
+- **Data Structure**: Account ID, amount, status, message, balance
+- **Return Codes**: 0=success, >0=error with descriptive message
 
 ## 📊 COBOL-Specific Conventions
 
@@ -71,22 +90,41 @@ COBOL → CALL "SYSTEM" → Python script → ibm_db → DB2
 
 ## 🔄 Data Flow Patterns
 
-### CSV Processing (minibank.cob)
+### Modular Architecture (Current - mb-main.cbl)
+```
+User Input → MBMAIN → Module Selection → MBDBSQL/MBDBCLI
+                                      ↓
+DB Request Structure ←→ Database Operations ←→ DB2/Stub Data
+                                      ↓
+Response Structure ←→ MBMAIN ←→ Display Results
+```
+
+**Key Pattern**: Dependency injection via environment variables allows runtime module swapping without recompilation.
+
+### Legacy CSV Processing (minibank.cob)
 1. Read `data/transactions.csv` line by line
-2. Parse with `UNSTRING` using "," delimiter
+2. Parse with `UNSTRING` using "," delimiter  
 3. Accumulate balances in memory arrays
 4. Write formatted output to `data/balances.csv`
 
-### DB2 Integration (minibank-db2.cob) 
-1. Process CSV transactions → Python → Insert to DB2
-2. Query balances from DB2 → Python → Temp file
-3. COBOL reads temp file and formats final output
+### Legacy DB2 Integration (minibank-db2.cob)
+1. Process CSV transactions → Python scripts → Insert to DB2
+2. Query balances from DB2 → Shell scripts → Temp files
+3. COBOL reads temp files and formats final output
 
-### Interactive Menu (minibank-menu.cob)
-1. Load account data from DB2 into COBOL arrays (one-time)
-2. Present menu loop with `PERFORM UNTIL`
-3. Process user input with `ACCEPT` and validation
-4. Query transaction details on-demand via Python interface
+### Module Communication Protocol
+All database operations use standardized request/response:
+```cobol
+COPY mb-db-if.           *> Shared interface definition
+MOVE 'BALANCE ' TO DB-FUNC
+MOVE 'ACC-001' TO DB-ACCOUNT-ID  
+CALL WS-MOD-DB-NAME USING DB-REQUEST
+IF DB-OK
+    DISPLAY 'Balance: ' DB-BALANCE
+ELSE
+    DISPLAY 'Error: ' DB-MESSAGE
+END-IF
+```
 
 ## 🐛 Common Issues & Debugging
 
@@ -107,19 +145,51 @@ COBOL → CALL "SYSTEM" → Python script → ibm_db → DB2
 
 ## 🧪 Testing & Validation
 
-- **Sample Data**: Located in `data/transactions.csv` (5 sample transactions)
-- **Expected Outputs**: `data/balances.csv` should show account totals
-- **DB2 Verification**: Use `.devcontainer/connect-db2.py` to query directly
-- **Interactive Testing**: Menu program accepts options 1, 2, 3 with validation
+### Dual-Mode Testing
+```bash
+# Test with stub data (no DB2 required)
+export MINIBANK_DB_MODULE=MBDBCLI
+./src/mb-main
 
-## 🎯 Key Integration Points  
+# Test with real DB2 connection  
+export MINIBANK_DB_MODULE=MBDBSQL
+./src/mb-main
 
-- **Python Interface**: `.devcontainer/db2-interface.py` - handles all DB2 operations
-- **Data Loading**: `.devcontainer/load-sample-data.py` - populates DB2 with test data
-- **Environment Setup**: `.devcontainer/post-create.sh` - one-time container initialization
-- **Copybooks**: `src/copybooks/record-layout.cpy` - shared data structures (reference only)
+# Test script for both modes
+./test-dual-mode.sh
+```
 
-When modifying COBOL programs, maintain the educational progression: basic → DB2 integration → interactive menus.
+### Data Sources
+- **Sample Data**: `data/transactions.csv` (5 sample transactions for CSV mode)
+- **DB2 Data**: Auto-loaded during container startup via `post-create.sh`
+- **Expected Outputs**: `data/balances.csv` (for legacy programs)
+
+### DB2 Helper Scripts
+Located in `db2-helpers/` for direct database operations:
+- `get-balances-cli.sh` - Query account balances
+- `insert-transaction-cli.sh` - Add single transaction
+- `load-accounts-cli.sh` - Bulk load accounts
+- `load-transactions-cli.sh` - Query transaction history
+
+## 🎯 Key Integration Points
+
+### Modular Architecture Files
+- **`src/copybooks/mb-db-if.cpy`** - Interface contract between main program and modules
+- **Environment Variables**: `MINIBANK_DB_MODULE`, `MINIBANK_DATA_SOURCE` control runtime behavior
+- **Module Loading**: Dynamic CALL statements enable plugin-like architecture
+
+### Container Setup & DB2
+- **`.devcontainer/init-db2-cli.sh`** - Database schema creation
+- **`.devcontainer/load-sample-data-cli.sh`** - Test data population  
+- **`.devcontainer/post-create.sh`** - Complete container initialization
+- **`db2-helpers/`** - CLI utilities for manual DB2 operations
+
+### Development Workflow
+When adding new database operations:
+1. Update `mb-db-if.cpy` with new function codes
+2. Implement in both `mb-db-sql.cbl` (production) and `mb-db-cli.cbl` (testing)
+3. Add corresponding logic in `mb-main.cbl`
+4. Test both modes using environment variable switches
 
 ## 📝 COBOL Coding Standards
 
