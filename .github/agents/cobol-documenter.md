@@ -1,4 +1,3 @@
-```chatagent
 ---
 name: 📚 COBOL Documenter
 description: 'Generates complete technical and user documentation for COBOL systems and mainframe architectures'
@@ -44,8 +43,8 @@ Agent dedicated **exclusively** to generating complete, clear and maintainable t
 - **Platform**: IBM z/OS, GNU COBOL
 
 ## 🎯 Purpose
-Specialized module that implements DB2 database operations 
-for the banking system, providing secure and optimized 
+Specialized module that implements DB2 database operations
+for the banking system, providing secure and optimized
 CRUD functions for accounts and transactions.
 
 ## 🔌 Interface
@@ -100,7 +99,7 @@ CALL 'MBDBSQL' USING DB-REQUEST
 
 2. **Seleccionar modo**:
    - `1` - Consultar saldo
-   - `2` - Realizar depósito  
+   - `2` - Realizar depósito
    - `3` - Realizar retiro
    - `9` - Salir
 
@@ -187,7 +186,7 @@ cobc -x -Wall -O2 -I src/copybooks -o src/mb-db-sql src/mb-db-sql.cbl
 
 ## 📤 Outputs Generados
 - **Documentación Markdown**: Lista para GitHub/GitLab
-- **Diagramas referenciados**: Links a diagramas Mermaid  
+- **Diagramas referenciados**: Links a diagramas Mermaid
 - **Índices de contenido**: Navegación automática
 - **Ejemplos ejecutables**: Code snippets validados
 - **Metadatos**: Fechas, versiones, autores

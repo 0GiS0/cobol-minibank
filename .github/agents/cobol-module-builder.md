@@ -1,4 +1,3 @@
-```chatagent
 ---
 name: 🔧 COBOL Module Builder
 description: 'Implements and develops COBOL modules following enterprise standards and best practices'
@@ -43,12 +42,12 @@ Specialized agent for **implementing and developing** complete COBOL modules, fr
 *> ============================================================
 
  PROGRAM-ID. MBDBTST.
- 
+
  ENVIRONMENT DIVISION.
  CONFIGURATION SECTION.
  SOURCE-COMPUTER. IBM-Z15.
  OBJECT-COMPUTER. IBM-Z15.
- 
+
  DATA DIVISION.
  WORKING-STORAGE SECTION.
  01  WS-PROGRAM-INFO.
@@ -92,7 +91,7 @@ Specialized agent for **implementing and developing** complete COBOL modules, fr
 
 ## 📥 Typical Inputs
 - "Implement a module that validates account numbers"
-- "Create a copybook for banking transactions"  
+- "Create a copybook for banking transactions"
 - "Develop a main program with interactive menu"
 - "Implement a DB2 connection module with connection pooling"
 

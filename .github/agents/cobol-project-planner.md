@@ -1,4 +1,3 @@
-```chatagent
 ---
 name: 📋 COBOL Project Planner
 description: 'Planifica proyectos COBOL enterprise con arquitectura modular, timelines y resource allocation'
@@ -42,7 +41,7 @@ Agente especializado **exclusivamente** en planificar proyectos COBOL enterprise
 
 🔧 MÓDULOS PRINCIPALES:
 ├── 🎮 MBMAIN - Controlador principal (Semana 1-2)
-├── 🗄️ MBDBSQL - Acceso DB2 producción (Semana 3-4)  
+├── 🗄️ MBDBSQL - Acceso DB2 producción (Semana 3-4)
 ├── 🧪 MBDBCLI - Stub testing (Semana 2-3)
 ├── 📋 MBDBIF.CPY - Interface contract (Semana 1)
 └── 🔐 MBSEC - Módulo seguridad (Semana 5-6)
@@ -142,7 +141,7 @@ Week 5-6:
 🔴 RIESGOS ALTOS
 ├── 🗄️ Complejidad integración DB2 (70% probabilidad)
 │   └── 🛡️ Mitigation: Prototipo temprano, DBA dedicado
-├── ⏱️ Timeline ajustado para scope (60% probabilidad)  
+├── ⏱️ Timeline ajustado para scope (60% probabilidad)
 │   └── 🛡️ Mitigation: MVP approach, features opcional
 └── 👥 Disponibilidad mainframe testing (50% probabilidad)
     └── 🛡️ Mitigation: Emulador z/OS, testing paralelo
@@ -165,7 +164,7 @@ Week 5-6:
 - **Interface contracts**: Copybooks definidos y validados
 - **Project charter**: Scope, timeline, resources
 
-### 🔧 FASE 2: Core Development  
+### 🔧 FASE 2: Core Development
 - **Módulos COBOL**: Código fuente completo y compilable
 - **Unit tests**: Coverage > 90% funciones críticas
 - **DB2 schema**: Tablas, índices, stored procedures

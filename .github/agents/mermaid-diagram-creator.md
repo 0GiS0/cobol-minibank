@@ -1,4 +1,3 @@
-```chatagent
 ---
 name: 🎨 Mermaid Diagram Creator
 description: 'Crea diagramas Mermaid optimizados para arquitecturas COBOL, dependencias y flujos de datos mainframe'
@@ -31,16 +30,16 @@ Agente especializado **exclusivamente** en crear diagramas Mermaid optimizados p
 ```mermaid
 architecture-beta
     group mainframe(cloud)[Mainframe z/OS]
-    
+
     service db2(database)[DB2 Database] in mainframe
     service cics(server)[CICS Transaction Server] in mainframe
     service batch(server)[Batch Job Scheduler] in mainframe
-    
+
     group cobol_modules(generic)[COBOL Modules]
     service mb_main(server)[MBMAIN<br/>🎮 Main Controller] in cobol_modules
     service mb_db_sql(server)[MBDBSQL<br/>🗄️ DB2 Access] in cobol_modules
     service mb_db_cli(server)[MBDBCLI<br/>🧪 Test Module] in cobol_modules
-    
+
     mb_main:R --> L:mb_db_sql
     mb_main:R --> L:mb_db_cli
     mb_db_sql:B --> T:db2
@@ -54,17 +53,17 @@ graph TB
     MBDBSQL[MBDBSQL<br/>🗄️ DB2 access module]
     MBDBCLI[MBDBCLI<br/>🧪 Test stub module]
     COPYBOOK[mb-db-if.cpy<br/>📋 Shared interface]
-    
+
     MBMAIN -->|CALL<br/>production| MBDBSQL
     MBMAIN -->|CALL<br/>test mode| MBDBCLI
     MBMAIN -->|COPY| COPYBOOK
     MBDBSQL -->|COPY| COPYBOOK
     MBDBCLI -->|COPY| COPYBOOK
-    
+
     classDef mainProg fill:#2E86AB,stroke:#A23B72,stroke-width:3px,color:#fff
     classDef dbMod fill:#F18F01,stroke:#C73E1D,stroke-width:2px,color:#fff
     classDef copybook fill:#FFE66D,stroke:#FF6B35,stroke-width:2px,color:#333
-    
+
     class MBMAIN mainProg
     class MBDBSQL,MBDBCLI dbMod
     class COPYBOOK copybook
@@ -77,17 +76,17 @@ sequenceDiagram
     participant Main as MBMAIN<br/>🎮 Main Program
     participant DBMod as MBDBSQL<br/>🗄️ DB Module
     participant DB2 as DB2<br/>🗄️ Database
-    
+
     User->>Main: Solicitar saldo
     Main->>Main: Validar entrada
     Note over Main: Formato cuenta<br/>Longitud: 1-30 chars
-    
+
     Main->>DBMod: CALL 'BALANCE'
     Note over Main,DBMod: DB-FUNC='BALANCE '<br/>DB-ACCOUNT-ID='ACC-001'
-    
+
     DBMod->>DB2: SELECT balance FROM accounts
     DB2-->>DBMod: Resultado query
-    
+
     alt Cuenta encontrada
         DBMod-->>Main: DB-STATUS='00'<br/>DB-BALANCE=1500.00
         Main-->>User: 💰 Saldo: $1,500.00
@@ -107,7 +106,7 @@ erDiagram
         DATE created_date "Fecha creación"
         CHAR status "A=Activa, I=Inactiva"
     }
-    
+
     TRANSACTIONS {
         BIGINT transaction_id PK "ID autoincremental"
         VARCHAR account_id FK "Referencia a cuenta"
@@ -116,7 +115,7 @@ erDiagram
         TIMESTAMP created_at "Timestamp"
         VARCHAR description "Descripción"
     }
-    
+
     AUDIT_LOG {
         BIGINT audit_id PK "ID de auditoría"
         VARCHAR program_name "Programa COBOL"
@@ -125,7 +124,7 @@ erDiagram
         TIMESTAMP audit_timestamp "Momento auditoría"
         VARCHAR user_id "Usuario del sistema"
     }
-    
+
     ACCOUNTS ||--o{ TRANSACTIONS : "tiene"
     ACCOUNTS ||--o{ AUDIT_LOG : "registra"
 ```
@@ -135,42 +134,42 @@ erDiagram
 flowchart TD
     Start([🚀 Inicio MiniBank]) --> Input[📝 Mostrar menú]
     Input --> Choice{🤔 Opción seleccionada}
-    
+
     Choice -->|1| Balance[🔍 Consultar saldo]
     Choice -->|2| Deposit[💰 Realizar depósito]
     Choice -->|3| Withdraw[💳 Realizar retiro]
     Choice -->|9| Exit([🏁 Salir])
-    
+
     Balance --> ValidateAcc1[✅ Validar cuenta]
     ValidateAcc1 -->|Válida| CallBalance[📞 CALL MBDBSQL]
     ValidateAcc1 -->|Inválida| ErrorMsg1[❌ Error formato]
-    
+
     Deposit --> ValidateAcc2[✅ Validar cuenta]
     ValidateAcc2 -->|Válida| ValidateAmt[💲 Validar monto]
     ValidateAmt -->|Válido| CallDeposit[📞 CALL MBDBSQL]
     ValidateAmt -->|Inválido| ErrorMsg2[❌ Error monto]
-    
+
     Withdraw --> ValidateAcc3[✅ Validar cuenta]
     ValidateAcc3 -->|Válida| ValidateAmt2[💲 Validar monto]
     ValidateAmt2 -->|Válido| CallWithdraw[📞 CALL MBDBSQL]
     ValidateAmt2 -->|Inválido| ErrorMsg3[❌ Error monto]
-    
+
     CallBalance --> ShowResult1[📊 Mostrar saldo]
     CallDeposit --> ShowResult2[✅ Confirmar depósito]
     CallWithdraw --> ShowResult3[✅ Confirmar retiro]
-    
+
     ErrorMsg1 --> Input
     ErrorMsg2 --> Input
     ErrorMsg3 --> Input
     ShowResult1 --> Input
     ShowResult2 --> Input
     ShowResult3 --> Input
-    
+
     classDef startEnd fill:#2E86AB,stroke:#fff,stroke-width:2px,color:#fff
     classDef process fill:#F18F01,stroke:#fff,stroke-width:2px,color:#fff
     classDef decision fill:#FFE66D,stroke:#333,stroke-width:2px,color:#333
     classDef error fill:#E63946,stroke:#fff,stroke-width:2px,color:#fff
-    
+
     class Start,Exit startEnd
     class Balance,Deposit,Withdraw,CallBalance,CallDeposit,CallWithdraw process
     class Choice,ValidateAcc1,ValidateAcc2,ValidateAcc3,ValidateAmt,ValidateAmt2 decision
@@ -193,7 +192,7 @@ flowchart TD
 
 ## 📥 Inputs Típicos
 - "Crea diagrama de arquitectura para el sistema dual-mode"
-- "Diagrama de dependencias entre módulos COBOL"  
+- "Diagrama de dependencias entre módulos COBOL"
 - "Sequence diagram para proceso de depósito bancario"
 - "ER diagram para el esquema de base de datos"
 - "Flowchart de la lógica del menú principal"

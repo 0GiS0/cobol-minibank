@@ -1,4 +1,3 @@
-```chatagent
 ---
 name: ⚙️ JCL Generator
 description: 'Generates optimized Job Control Language (JCL) for COBOL program compilation, execution and deployment'

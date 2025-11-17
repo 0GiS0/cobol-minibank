@@ -1,4 +1,3 @@
-```chatagent
 ---
 name: 📊 Impact Analyzer
 description: 'Analyzes impact of changes in COBOL code, dependencies and system architecture'
