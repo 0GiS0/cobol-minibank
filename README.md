@@ -283,37 +283,32 @@ make clean
 El siguiente diagrama muestra la relación entre los programas COBOL y sus dependencias:
 
 ```mermaid
-flowchart TB
-
-    %% Subgraphs group related artifacts
-    subgraph PROGRAMS[COBOL Programs]
-        MBMAIN["MBMAIN\nMain interactive app"]
-        MBDBSQL["MBDBSQL\nDB2 access module"]
-        MBDBCLI["MBDBCLI\nStub DB module"]
-    end
-
-    subgraph COPYBOOKS[Copybooks]
-        CPY_DB_IF["mb-db-if.cpy\nDB request/response interface"]
-    end
-
+graph TB
+    %% Main program
+    MBMAIN[MBMAIN<br/>🎮 Main interactive app]
+    
+    %% Database modules
+    MBDBSQL[MBDBSQL<br/>🗄️ DB2 access module]
+    MBDBCLI[MBDBCLI<br/>🧪 Stub DB module]
+    
+    %% Copybook
+    COPYBOOK[mb-db-if.cpy<br/>📋 DB interface]
+    
     %% Relationships
-    MBMAIN -->|CALL (DB2 mode)| MBDBSQL
-    MBMAIN -->|CALL (stub mode)| MBDBCLI
-    MBMAIN -->|COPY| CPY_DB_IF
-    MBDBSQL -->|COPY| CPY_DB_IF
-    MBDBCLI -->|COPY| CPY_DB_IF
-
+    MBMAIN -->|CALL<br/>DB2 mode| MBDBSQL
+    MBMAIN -->|CALL<br/>stub mode| MBDBCLI
+    MBMAIN -->|COPY| COPYBOOK
+    MBDBSQL -->|COPY| COPYBOOK
+    MBDBCLI -->|COPY| COPYBOOK
+    
     %% Styling
-    classDef program fill:#0b5bd7,stroke:#083e8f,stroke-width:1px,color:#ffffff,font-weight:bold;
-    classDef copybook fill:#ffd54f,stroke:#c8a600,stroke-width:2px,color:#222222,font-weight:bold;
-    class MBMAIN,MBDBSQL,MBDBCLI program;
-    class CPY_DB_IF copybook;
-
-    %% Legend (pseudo)
-    L1["Legend:\nSolid arrow: dependency\nLabel 'CALL': dynamic invocation\nLabel 'COPY': copybook inclusion"]:::legend
-    classDef legend fill:#f0f0f0,stroke:#999,color:#222,font-size:10px;
-    %% Position legend
-    L1 --- MBMAIN
+    classDef mainProg fill:#2E86AB,stroke:#A23B72,stroke-width:3px,color:#fff
+    classDef dbMod fill:#F18F01,stroke:#C73E1D,stroke-width:2px,color:#fff
+    classDef copybook fill:#FFE66D,stroke:#FF6B35,stroke-width:2px,color:#333
+    
+    class MBMAIN mainProg
+    class MBDBSQL,MBDBCLI dbMod
+    class COPYBOOK copybook
 ```
 
 ### 📋 Explicación del Diagrama
