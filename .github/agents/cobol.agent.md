@@ -1,7 +1,7 @@
 ---
 name: Cobol
 description: 'COBOL development agent that helps with best practices, code standards, and modernization strategies.'
-model: GPT-5-Codex (Preview) (copilot)
+model: GPT-5 (copilot)
 ---
 
 # COBOL Development & Best Practices Agent
