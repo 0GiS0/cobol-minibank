@@ -999,6 +999,55 @@ Creado con 💙 para la comunidad de desarrolladores que quieren aprender COBOL 
 
 ---
 
+## 🤖 Agentes COBOL Especializados
+
+Este repositorio incluye **6 agentes especializados** para GitHub Copilot que te ayudan con tareas específicas de desarrollo COBOL:
+
+### 📊 **Impact Analyzer**
+Analiza el impacto de cambios en código COBOL, dependencias y arquitectura del sistema.
+- ✅ Evalúa qué componentes se verán afectados por modificaciones
+- ✅ Genera reportes de riesgo con estimaciones de tiempo
+- ✅ Mapea dependencias entre módulos COBOL
+
+### 🔧 **COBOL Module Builder** 
+Implementa y desarrolla módulos COBOL completos siguiendo estándares enterprise.
+- ✅ Genera código COBOL listo para producción
+- ✅ Crea copybooks, interfaces DB2 y programas principales
+- ✅ Aplica optimización automática y mejores prácticas
+
+### ⚙️ **JCL Generator**
+Genera Job Control Language optimizado para mainframe.
+- ✅ JCL para compilación, linkedición y ejecución
+- ✅ Jobs especializados para DB2, testing y batch processing
+- ✅ Automatización de deployment en mainframe
+
+### 📚 **COBOL Documenter**
+Genera documentación técnica y de usuario completa.
+- ✅ Especificaciones técnicas con definiciones de interfaces
+- ✅ Manuales de usuario y guías de operación
+- ✅ Documentación de APIs en formato Markdown
+
+### 🎨 **Mermaid Diagram Creator**
+Crea diagramas Mermaid optimizados para arquitecturas COBOL.
+- ✅ Diagramas de dependencias entre programas
+- ✅ Diagramas de secuencia para flujos de negocio
+- ✅ Diagramas ER para esquemas de base de datos
+- ✅ Diagramas de arquitectura mainframe
+
+### 📋 **COBOL Project Planner**
+Planifica proyectos COBOL enterprise con arquitectura modular.
+- ✅ Cronogramas detallados y asignación de recursos
+- ✅ Análisis de riesgos y estrategias de mitigación
+- ✅ Entregables completos por fase del proyecto
+
+**💡 Cómo usar los agentes:**
+En GitHub Copilot Chat, simplemente menciona el agente que necesitas:
+- `@impact-analyzer "Analiza el impacto de modificar mb-db-if.cpy"`
+- `@cobol-module-builder "Implementa un módulo de validación de cuentas"`
+- `@mermaid-diagram-creator "Crea un diagrama de la arquitectura dual-mode"`
+
+---
+
 ## 🎯 Próximos Pasos Sugeridos
 
 Si estás aprendiendo COBOL con este repositorio:

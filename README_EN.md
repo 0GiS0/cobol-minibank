@@ -863,6 +863,55 @@ Created with 💙 for the developer community who wants to learn modern COBOL.
 
 ---
 
+## 🤖 Specialized COBOL Agents
+
+This repository includes **6 specialized agents** for GitHub Copilot that help you with specific COBOL development tasks:
+
+### 📊 **Impact Analyzer**
+Analyzes the impact of changes in COBOL code, dependencies and system architecture.
+- ✅ Evaluates which components will be affected by modifications
+- ✅ Generates risk reports with time estimates
+- ✅ Maps dependencies between COBOL modules
+
+### 🔧 **COBOL Module Builder** 
+Implements and develops complete COBOL modules following enterprise standards.
+- ✅ Generates production-ready COBOL code
+- ✅ Creates copybooks, DB2 interfaces and main programs
+- ✅ Applies automatic optimization and best practices
+
+### ⚙️ **JCL Generator**
+Generates optimized Job Control Language for mainframe.
+- ✅ JCL for compilation, link-editing and execution
+- ✅ Specialized jobs for DB2, testing and batch processing
+- ✅ Mainframe deployment automation
+
+### 📚 **COBOL Documenter**
+Generates complete technical and user documentation.
+- ✅ Technical specifications with interface definitions
+- ✅ User manuals and operation guides
+- ✅ API documentation in Markdown format
+
+### 🎨 **Mermaid Diagram Creator**
+Creates Mermaid diagrams optimized for COBOL architectures.
+- ✅ Program dependency diagrams
+- ✅ Sequence diagrams for business flows
+- ✅ ER diagrams for database schemas
+- ✅ Mainframe architecture diagrams
+
+### 📋 **COBOL Project Planner**
+Plans COBOL enterprise projects with modular architecture.
+- ✅ Detailed timelines and resource allocation
+- ✅ Risk analysis and mitigation strategies
+- ✅ Complete deliverables by project phase
+
+**💡 How to use the agents:**
+In GitHub Copilot Chat, simply mention the agent you need:
+- `@impact-analyzer "Analyze the impact of modifying mb-db-if.cpy"`
+- `@cobol-module-builder "Implement an account validation module"`
+- `@mermaid-diagram-creator "Create a diagram of the dual-mode architecture"`
+
+---
+
 ## 🎯 Suggested Next Steps
 
 If you're learning COBOL with this repository:

@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 ---
 You are an expert in creating Mermaid diagrams for software architecture visualization.
 
