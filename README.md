@@ -278,29 +278,82 @@ make clean
 
 ---
 
+## 🏗️ Arquitectura y Dependencias de Programas
+
+El siguiente diagrama muestra la relación entre los programas COBOL y sus dependencias:
+
+```mermaid
+flowchart TB
+
+    %% Subgraphs group related artifacts
+    subgraph PROGRAMS[COBOL Programs]
+        MBMAIN["MBMAIN\nMain interactive app"]
+        MBDBSQL["MBDBSQL\nDB2 access module"]
+        MBDBCLI["MBDBCLI\nStub DB module"]
+    end
+
+    subgraph COPYBOOKS[Copybooks]
+        CPY_DB_IF["mb-db-if.cpy\nDB request/response interface"]
+    end
+
+    %% Relationships
+    MBMAIN -->|CALL (DB2 mode)| MBDBSQL
+    MBMAIN -->|CALL (stub mode)| MBDBCLI
+    MBMAIN -->|COPY| CPY_DB_IF
+    MBDBSQL -->|COPY| CPY_DB_IF
+    MBDBCLI -->|COPY| CPY_DB_IF
+
+    %% Styling
+    classDef program fill:#0b5bd7,stroke:#083e8f,stroke-width:1px,color:#ffffff,font-weight:bold;
+    classDef copybook fill:#ffd54f,stroke:#c8a600,stroke-width:2px,color:#222222,font-weight:bold;
+    class MBMAIN,MBDBSQL,MBDBCLI program;
+    class CPY_DB_IF copybook;
+
+    %% Legend (pseudo)
+    L1["Legend:\nSolid arrow: dependency\nLabel 'CALL': dynamic invocation\nLabel 'COPY': copybook inclusion"]:::legend
+    classDef legend fill:#f0f0f0,stroke:#999,color:#222,font-size:10px;
+    %% Position legend
+    L1 --- MBMAIN
+```
+
+### 📋 Explicación del Diagrama
+
+- **MBMAIN**: Programa principal interactivo que puede funcionar en dos modos
+- **MBDBSQL**: Módulo de acceso a DB2 (modo producción)
+- **MBDBCLI**: Módulo stub para pruebas (modo desarrollo)
+- **mb-db-if.cpy**: Copybook que define las interfaces de request/response
+
+**Modo de Operación:**
+- `MBMAIN` selecciona qué módulo DB usar mediante la variable de entorno `MINIBANK_DB_MODULE`
+- Por defecto usa `MBDBSQL ` (con DB2 real)
+- Para pruebas locales se puede cambiar a `MBDBCLI ` (datos simulados)
+
+---
+
 ## 📂 Estructura del Proyecto
 
 ```
 cobol-minibank/
 ├── src/
-│   ├── minibank.cob          # 📝 Programa 1: Básico con CSV
-│   ├── minibank-db2.cob      # 🗄️ Programa 2: Integración con DB2
-│   ├── minibank-menu.cob     # 🎮 Programa 3: Menú interactivo
+│   ├── mb-main.cbl           # 🎮 Programa principal interactivo (MBMAIN)
+│   ├── mb-db-sql.cbl         # 🗄️ Módulo de acceso a DB2 (MBDBSQL)
+│   ├── mb-db-cli.cbl         # 🧪 Módulo stub para pruebas (MBDBCLI)
 │   └── copybooks/            # 📚 Definiciones reutilizables
-│       └── record-layout.cpy # Layout de registros CSV
+│       └── mb-db-if.cpy      # Interface DB request/response
 ├── data/
 │   ├── transactions.csv      # 📥 Transacciones de entrada
 │   └── balances.csv          # 📤 Saldos de salida (generado)
+├── db2-helpers/              # 🔧 Scripts auxiliares para DB2
+│   ├── get-balances-cli.sh   # Consultar saldos
+│   ├── insert-transaction-cli.sh # Insertar transacción
+│   ├── load-accounts-cli.sh  # Cargar cuentas
+│   └── load-transactions-cli.sh # Cargar transacciones
+├── diagrams/
+│   └── program-dependencies.mmd # 📊 Diagrama de arquitectura
 ├── .devcontainer/
 │   ├── devcontainer.json     # ⚙️ Configuración del Dev Container
 │   ├── Dockerfile            # 🐳 Imagen con GnuCOBOL + Python
-│   ├── compose.yml           # 🐳 Docker Compose (app + db2)
-│   ├── init-db2.sql          # 📊 Esquema de base de datos
-│   ├── db2-interface.py      # 🔗 Wrapper Python para DB2
-│   ├── get-accounts.py       # 📋 Consultar cuentas desde COBOL
-│   ├── get-transactions.py   # 📋 Consultar transacciones desde COBOL
-│   ├── load-sample-data.py   # 🎲 Cargar datos de ejemplo
-│   └── verify-db2.sh         # ✅ Script de verificación de DB2
+│   └── compose.yml           # 🐳 Docker Compose (app + db2)
 ├── Makefile                  # 🔧 Build automation
 ├── .vscode/
 │   └── tasks.json            # ⚡ VS Code tasks
