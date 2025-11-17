@@ -4,8 +4,6 @@ name: 🔧 COBOL Module Builder
 description: 'Implements and develops COBOL modules following enterprise standards'
 ---
 
-# 🔧 Test Prompt: COBOL Module Builder
-
 ## Descripción
 Prueba el agente **COBOL Module Builder** implementando un nuevo módulo de seguridad para el sistema.
 

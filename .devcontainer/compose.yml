@@ -9,7 +9,7 @@ services:
     env_file:
       - .db2.env
     volumes:
-      - db2_data:/database
+      # - db2_data:/database
       - ../..:/workspaces:cached
     ports:
       - 50000:50000
@@ -36,5 +36,5 @@ services:
   #   volumes:
   #     - db2_data:/database
 
-volumes:
-  db2_data:
+# volumes:
+#   db2_data:

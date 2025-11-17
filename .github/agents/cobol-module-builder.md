@@ -1,7 +1,7 @@
 ---
 name: 🔧 COBOL Module Builder
 description: 'Implements and develops COBOL modules following enterprise standards and best practices'
-model: Claude Sonnet 4 (copilot)
+model: GPT-5.1 (Preview) (copilot)
 handoffs:
   - label: "📊 Analyze Impact"
     agent: impact-analyzer

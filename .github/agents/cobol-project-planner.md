@@ -1,7 +1,7 @@
 ---
 name: 📋 COBOL Project Planner
 description: 'Plans enterprise COBOL projects with modular architecture, timelines and resource allocation'
-model: Claude Sonnet 4 (copilot)
+model: GPT-5.1-Codex (Preview) (copilot)
 handoffs:
   - label: "🔧 Implement Modules"
     agent: cobol-module-builder

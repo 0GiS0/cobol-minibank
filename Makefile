@@ -13,8 +13,8 @@ SRC_SQL_DB2=src/minibank-sql-db2.cbl
 # Sistema modular (mb-main)
 APP_MAIN=src/mb-main
 SRC_MAIN=src/mb-main.cbl
-MOD_DB_SQL=src/mb-db-sql
-MOD_DB_CLI=src/mb-db-cli
+MOD_DB_SQL=src/MBDBSQL
+MOD_DB_CLI=src/MBDBCLI
 SRC_MOD_DB_SQL=src/mb-db-sql.cbl
 SRC_MOD_DB_CLI=src/mb-db-cli.cbl
 
