@@ -5,7 +5,7 @@ model: Claude Sonnet 4 (copilot)
 handoffs:
   - label: "🎨 Generate Diagrams"
     agent: mermaid-diagram-creator
-    prompt: "Create Mermaid diagrams for this COBOL documentation:\n{documentation_details}"
+    prompt: "Create Mermaid diagrams for this COBOL documentation."
 ---
 
 # 📚 Specialized COBOL Documenter

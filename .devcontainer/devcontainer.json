@@ -12,7 +12,9 @@
         "redhat.vscode-yaml",
         "streetsidesoftware.code-spell-checker",
         "mechatroner.rainbow-csv",
-        "bitlang.cobol-themes"
+        "bitlang.cobol-themes",
+        "vstirbu.vscode-mermaid-preview",
+        "MermaidChart.vscode-mermaid-chart"
       ],
       "settings": {
         "workbench.colorTheme": "Enterprise COBOL (for entcobol dialect)",

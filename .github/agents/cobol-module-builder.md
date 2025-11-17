@@ -8,7 +8,7 @@ handoffs:
     prompt: "Analyze the impact of implementing this COBOL module:\n{module_details}"
   - label: "📚 Document Module"
     agent: cobol-documenter
-    prompt: "Document this implemented COBOL module:\n{code}"
+    prompt: "Document this implemented COBOL module."
 ---
 
 # 🔧 COBOL Module Builder

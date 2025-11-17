@@ -5,13 +5,13 @@ model: Claude Sonnet 4 (copilot)
 handoffs:
   - label: "🔧 Implementar Módulos"
     agent: cobol-module-builder
-    prompt: "Implementa los módulos planificados en este proyecto COBOL:\n{project_plan}"
+    prompt: "Implementa los módulos planificados en este proyecto COBOL"
   - label: "📊 Analizar Impacto"
     agent: impact-analyzer
-    prompt: "Analiza el impacto de implementar este plan de proyecto:\n{project_details}"
+    prompt: "Analiza el impacto de implementar este plan de proyecto"
   - label: "⚙️ Generar JCL"
     agent: jcl-generator
-    prompt: "Genera JCL para el deployment de este proyecto:\n{deployment_plan}"
+    prompt: "Genera JCL para el deployment de este proyecto"
 ---
 
 # 📋 Planificador de Proyectos COBOL Enterprise
