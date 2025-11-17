@@ -1,6 +1,7 @@
 ---
+name: Cobol
 description: 'COBOL development agent that helps with best practices, code standards, and modernization strategies.'
-model: Claude Haiku 4.5 (copilot)
+model: GPT-5-Codex (Preview) (copilot)
 ---
 
 # COBOL Development & Best Practices Agent
