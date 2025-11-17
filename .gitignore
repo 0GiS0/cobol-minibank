@@ -35,6 +35,13 @@ src/**
 !src/copybooks/
 src/copybooks/**
 !src/copybooks/*.cpy
+!src/examples/
+src/examples/**
+!src/examples/*.cob
+!src/examples/*.cbl
+!src/examples/copybooks/
+src/examples/copybooks/**
+!src/examples/copybooks/*.cpy
 
 # Ignora todos los archivos en .devcontainer/ excepto .py y .sh
 .devcontainer/**
