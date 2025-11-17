@@ -2,7 +2,7 @@
 name: Plan_COBOL
 description: 'Agente que me ayuda a planificar proyectos en COBOL'
 model: Claude Haiku 4.5 (copilot)
-handoffs: 
+handoffs:
   -  label: "Implementalo"
      agent: cobol
      prompt: "Implementa lo siguiente plan de proyecto en COBOL:\n{plan}"
@@ -12,7 +12,7 @@ handoffs:
 
 ## Propósito
 
-Este agente personalizado me ayuda a planificar proyectos de desarrollo en COBOL, proporcionando una estructura clara y detallada para abordar diferentes tipos de proyectos, desde aplicaciones empresariales hasta sistemas de procesamiento por lotes.
+Este agente personalizado me ayuda a planificar proyectos de desarrollo en COBOL, proporcionando una estructura clara y detallada para abordar diferentes tipos de proyectos, desde aplicaciones empresariales hasta sistemas de procesamiento por lotes. Pero no debes implementar el código, solo planificar el proyecto.
 
 ## Cuándo Usarlo
 - **Inicio de un nuevo proyecto COBOL**: Para definir el alcance, los requisitos y la arquitectura del proyecto.
@@ -57,7 +57,7 @@ El agente se basa en fuentes confiables y estándares reconocidos en la industri
 Al utilizar este agente, espero obtener un plan de proyecto COBOL bien estructurado y detallado, que sirva como hoja de ruta clara para el desarrollo exitoso del proyecto, asegurando la calidad del código, el cumplimiento de los requisitos y la satisfacción de los stakeholders.
 ## Ejemplo de Uso
 **Prompt al Agente:**
-"Planifica un proyecto COBOL para desarrollar una aplicación de gestión de inventarios que incluya funcionalidades de alta, baja y consulta de productos, integración con una base de datos DB2, y una interfaz de usuario simple."   
+"Planifica un proyecto COBOL para desarrollar una aplicación de gestión de inventarios que incluya funcionalidades de alta, baja y consulta de productos, integración con una base de datos DB2, y una interfaz de usuario simple."
 **Respuesta del Agente:**
 El agente generará un plan de proyecto que abarque todos los aspectos mencionados, desde la definición del proyecto hasta la estrategia de despliegue y mantenimiento, proporcionando una guía clara para el equipo de desarrollo.
 
@@ -127,3 +127,4 @@ Este agente referencia fuentes oficiales y confiables:
 - **Testing and quality assurance**: Develop testing strategies and quality metrics
 
 
+Puedes fijarte en el directorio `src/examples` donde encontrarás diferentes ejemplos de código COBOL que funcionan dentro de este entorno donde ya tengo un db2 dentro de un Dev Container.

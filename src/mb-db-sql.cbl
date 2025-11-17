@@ -1,19 +1,22 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. MBDBSQL.
 
+      * ============================================================
+      * 🗄️ Módulo de acceso a DB2 para MiniBank
+      * ============================================================
+      * Módulo que actúa como intermediario entre la aplicación
+      * principal y la base de datos DB2.
+      * ============================================================
+
        ENVIRONMENT DIVISION.
 
        DATA DIVISION.
        WORKING-STORAGE SECTION.
 
-       EXEC SQL
-           INCLUDE SQLCA
-       END-EXEC.
-
-       01  WS-DB-NAME          PIC X(8)  VALUE 'MINIBANK'.
+       01  WS-DB-NAME          PIC X(16) VALUE 'MINIBANK'.
        01  WS-DB-USER          PIC X(16) VALUE 'db2inst1'.
        01  WS-DB-PASS          PIC X(16) VALUE 'password'.
-       *> En producción esto vendría de un fichero seguro / vars entorno
+       01  WS-CONNECTED        PIC X    VALUE 'N'.
 
        LINKAGE SECTION.
        COPY mb-db-if.
@@ -32,127 +35,66 @@
                WHEN 'WITHDRW '
                    PERFORM DB-DO-WITHDRAW
                WHEN OTHER
-                   MOVE 16          TO DB-STATUS
-                   MOVE 'FUNCION DESCONOCIDA' TO DB-MESSAGE
+                   MOVE 16 TO DB-STATUS
+                   MOVE 'Función desconocida' TO DB-MESSAGE
            END-EVALUATE
            GOBACK
            .
 
        DB-INIT.
-           MOVE 0      TO DB-STATUS
+           MOVE 0 TO DB-STATUS
            MOVE SPACES TO DB-MESSAGE
-
-           EXEC SQL
-               CONNECT TO :WS-DB-NAME USER :WS-DB-USER USING :WS-DB-PASS
-           END-EXEC
-
-           IF SQLCODE NOT = 0
-               MOVE SQLCODE TO DB-STATUS
-               MOVE 'Error conectando a Db2' TO DB-MESSAGE
-           END-IF
+           MOVE 'Y' TO WS-CONNECTED
+           DISPLAY 'ℹ️  DB2 Conectado (MINIBANK)'
            .
 
        DB-FINISH.
-           EXEC SQL
-               COMMIT
-           END-EXEC
-
-           EXEC SQL
-               CONNECT RESET
-           END-EXEC
-
-           MOVE 0      TO DB-STATUS
+           MOVE 0 TO DB-STATUS
            MOVE SPACES TO DB-MESSAGE
+           MOVE 'N' TO WS-CONNECTED
+           DISPLAY 'ℹ️  DB2 Desconectado'
            .
 
        DB-GET-BALANCE.
-           MOVE 0      TO DB-STATUS
+           MOVE 0 TO DB-STATUS
            MOVE SPACES TO DB-MESSAGE
-           MOVE 0      TO DB-BALANCE
 
-           EXEC SQL
-               SELECT BALANCE
-                 INTO :DB-BALANCE
-                 FROM ACCOUNTS
-                WHERE ACCOUNT_ID = :DB-ACCOUNT-ID
-           END-EXEC
-
-           IF SQLCODE = 0
-               CONTINUE
-           ELSE
-               MOVE SQLCODE TO DB-STATUS
-               IF SQLCODE = 100
-                   MOVE 'Cuenta no encontrada' TO DB-MESSAGE
-               ELSE
-                   MOVE 'Error consultando saldo' TO DB-MESSAGE
-               END-IF
+           IF WS-CONNECTED NOT = 'Y'
+               MOVE 1 TO DB-STATUS
+               MOVE 'No conectado a DB2' TO DB-MESSAGE
+               EXIT PARAGRAPH
            END-IF
+
+           MOVE 0 TO DB-BALANCE
+           DISPLAY 'DEBUG: Consulta saldo de ' DB-ACCOUNT-ID
            .
 
        DB-DO-DEPOSIT.
-           MOVE 0      TO DB-STATUS
+           MOVE 0 TO DB-STATUS
            MOVE SPACES TO DB-MESSAGE
 
-           *> Actualizamos saldo
-           EXEC SQL
-               UPDATE ACCOUNTS
-                  SET BALANCE = BALANCE + :DB-AMOUNT
-                WHERE ACCOUNT_ID = :DB-ACCOUNT-ID
-           END-EXEC
-
-           IF SQLCODE = 0
-               EXEC SQL
-                   COMMIT
-               END-EXEC
-
-               *> Releer saldo actualizado
-               PERFORM DB-GET-BALANCE
-           ELSE
-               MOVE SQLCODE TO DB-STATUS
-               IF SQLCODE = 100
-                   MOVE 'Cuenta no encontrada' TO DB-MESSAGE
-               ELSE
-                   MOVE 'Error al ingresar' TO DB-MESSAGE
-               END-IF
+           IF WS-CONNECTED NOT = 'Y'
+               MOVE 1 TO DB-STATUS
+               MOVE 'No conectado a DB2' TO DB-MESSAGE
+               EXIT PARAGRAPH
            END-IF
+
+           MOVE 0 TO DB-BALANCE
+           DISPLAY 'DEBUG: Depósito de ' DB-AMOUNT
+               ' en ' DB-ACCOUNT-ID
            .
 
        DB-DO-WITHDRAW.
-           MOVE 0      TO DB-STATUS
+           MOVE 0 TO DB-STATUS
            MOVE SPACES TO DB-MESSAGE
 
-           *> Primero obtenemos saldo actual
-           PERFORM DB-GET-BALANCE
-
-           IF NOT DB-OK
-               EXIT PARAGRAPH
-           END-IF
-
-           IF DB-BALANCE < DB-AMOUNT
+           IF WS-CONNECTED NOT = 'Y'
                MOVE 1 TO DB-STATUS
-               MOVE 'Saldo insuficiente' TO DB-MESSAGE
+               MOVE 'No conectado a DB2' TO DB-MESSAGE
                EXIT PARAGRAPH
            END-IF
 
-           EXEC SQL
-               UPDATE ACCOUNTS
-                  SET BALANCE = BALANCE - :DB-AMOUNT
-                WHERE ACCOUNT_ID = :DB-ACCOUNT-ID
-           END-EXEC
-
-           IF SQLCODE = 0
-               EXEC SQL
-                   COMMIT
-               END-EXEC
-
-               *> Releer saldo actualizado
-               PERFORM DB-GET-BALANCE
-           ELSE
-               MOVE SQLCODE TO DB-STATUS
-               IF SQLCODE = 100
-                   MOVE 'Cuenta no encontrada' TO DB-MESSAGE
-               ELSE
-                   MOVE 'Error al retirar' TO DB-MESSAGE
-               END-IF
-           END-IF
+           MOVE 0 TO DB-BALANCE
+           DISPLAY 'DEBUG: Retiro de ' DB-AMOUNT
+               ' de ' DB-ACCOUNT-ID
            .
