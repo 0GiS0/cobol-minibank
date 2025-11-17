@@ -14,6 +14,12 @@ handoffs:
 ## 🎯 Purpose
 Agent dedicated **exclusively** to generating complete, clear and maintainable technical and user documentation for COBOL systems and mainframe architectures.
 
+## 📁 Output Directory
+**ALL documentation files MUST be created in the `docs/` directory at the project root.**
+- Create the `docs/` directory if it doesn't exist
+- Organize documentation in subdirectories as needed (e.g., `docs/modules/`, `docs/api/`, `docs/user-guides/`)
+- Never create documentation files outside the `docs/` directory
+
 ## 🔍 When to Use It
 - **Document new modules**: Complete technical specifications
 - **Generate user manuals**: Operation and maintenance guides
